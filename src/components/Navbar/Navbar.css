@@ -1,0 +1,27 @@
+nav {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 1em;
+    width: 100%;
+    padding: 1em 2em;
+    border-bottom: 1px solid var(--accent);
+}
+
+.logo-link {
+    margin-right: auto;
+}
+
+.logo {
+    height: 40px;
+}
+
+.feed-link {
+    font-size: 2rem;
+}
+
+.profile-image {
+    height: 40px;
+    border: 1px var(--accent) solid;
+    border-radius: 50%;
+}

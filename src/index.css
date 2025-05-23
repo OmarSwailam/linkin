@@ -10,6 +10,11 @@
   --accent: #66b2ff;
 }
 
+* {
+  box-sizing: border-box
+}
+
+
 body {
   background-color: var(--bg);
   color: var(--text);
@@ -31,4 +36,9 @@ button {
 a {
   color: var(--accent);
   text-decoration: none;
+  transition: color 0.3s, color 0.3s;
+}
+
+a:hover {
+  color: #0264cc;
 }
