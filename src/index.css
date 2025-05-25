@@ -1,27 +1,31 @@
 :root {
   --bg: #ffffff;
   --text: #111111;
-  --accent: #007bff;
+  --accent: #318BDA;
+  --font-primary: 'Manrope', sans-serif;
 }
 
 .dark {
   --bg: #121212;
   --text: #f5f5f5;
-  --accent: #66b2ff;
+  --accent: #318BDA;
 }
 
 * {
-  box-sizing: border-box
+  box-sizing: border-box;
+  font-family: var(--font-primary);
 }
 
-
-body {
+html,
+body,
+#root {
   background-color: var(--bg);
   color: var(--text);
   margin: 0;
   padding: 0;
   font-family: sans-serif;
   transition: background-color 0.3s, color 0.3s;
+  height: 100%;
 }
 
 button {
@@ -31,6 +35,11 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+button:hover {
+  background-color: #0264cc;
 }
 
 a {
@@ -41,4 +50,48 @@ a {
 
 a:hover {
   color: #0264cc;
+}
+
+.page {
+  padding: 2em;
+}
+
+.signup-page,
+.login-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  height: calc(100% - 5em);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 1000px;
+  margin-top: 3em;
+}
+
+.auth-form label {
+  margin-bottom: 0.5em;
+  font-size: 1.2rem;
+}
+
+.auth-form input {
+  width: 100%;
+  margin-bottom: 1.2rem;
+  border: none;
+  border-bottom: 1px black solid;
+  border-radius: 4px;
+  font-size: 1.1rem;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-bottom: 1px solid var(--accent);
+}
+
+.auth-form button[type="submit"] {
+  font-size: 1.1rem;
 }

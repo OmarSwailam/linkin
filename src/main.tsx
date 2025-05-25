@@ -4,11 +4,21 @@ import './index.css'
 import { ThemeProvider } from "./context/ThemeContext";
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './router.tsx';
+import { Toaster } from 'react-hot-toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AuthProvider } from './context/AuthContext.tsx';
+
+const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>
-  </StrictMode>,
+    <AuthProvider>
+      <ThemeProvider>
+        <Toaster />
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </ThemeProvider>
+    </AuthProvider>
+  </StrictMode>
 )
