@@ -2,12 +2,16 @@ import { useState, type FormEvent } from "react";
 import { useSignup } from "../../hooks/useAuth";
 import toast from 'react-hot-toast';
 import type { AxiosError } from "axios";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 export default function SignupForm() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const search = useSearch({ from: '/login' });
+    const navigate = useNavigate();
 
     const signupMutation = useSignup();
 
@@ -22,6 +26,10 @@ export default function SignupForm() {
                     setLastName("");
                     setEmail("");
                     setPassword("");
+
+                    const redirectTo = search.redirect || '/';
+                    navigate({ to: redirectTo });
+
                 },
             }
         );

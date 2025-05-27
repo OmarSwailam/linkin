@@ -82,9 +82,11 @@ a:hover {
   width: 100%;
   margin-bottom: 1.2rem;
   border: none;
-  border-bottom: 1px black solid;
+  border-bottom: 1px var(--text) solid;
   border-radius: 4px;
   font-size: 1.1rem;
+  background-color: transparent;
+  color: var(--text)
 }
 
 .auth-form input:focus {

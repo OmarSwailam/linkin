@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router"
+import { Link, useLocation } from "@tanstack/react-router"
 import ThemeToggle from "../ThemeToggle"
 import Logo from "../Logo"
 import "./Navbar.css"
@@ -8,6 +8,7 @@ import { useNavigate } from "@tanstack/react-router";
 export default function Navbar() {
     const { isAuthenticated, user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = () => {
         logout();
@@ -30,8 +31,16 @@ export default function Navbar() {
             </>
         ) : (
             <>
-                <Link to="/signup" className="link">Signup</Link>
-                <Link to="/login" className="link">Login</Link>
+                <Link
+                    to="/signup"
+                    search={{ redirect: location.pathname }}
+                    className="link">Signup
+                </Link>
+                <Link
+                    to="/login"
+                    search={{ redirect: location.pathname }}
+                    className="link">Login
+                </Link>
             </>
         )}
     </nav>

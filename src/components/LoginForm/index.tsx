@@ -2,10 +2,14 @@ import { useState, type FormEvent } from "react";
 import { useLogin } from "../../hooks/useAuth";
 import toast from 'react-hot-toast';
 import type { AxiosError } from "axios";
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const search = useSearch({ from: '/login' });
+    const navigate = useNavigate();
 
     const loginMutation = useLogin();
 
@@ -18,6 +22,9 @@ export default function LoginForm() {
                 onSuccess: () => {
                     setEmail("");
                     setPassword("");
+
+                    const redirectTo = search.redirect || '/';
+                    navigate({ to: redirectTo });
                 },
             }
         );
