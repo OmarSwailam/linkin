@@ -25,3 +25,14 @@ nav {
     border: 1px var(--accent) solid;
     border-radius: 50%;
 }
+
+.logout-btn {
+    background-color: var(--bg);
+    color: var(--accent);
+    padding: 0;
+    font-size: 1rem;
+}
+
+.logout-btn:hover {
+    background-color: var(--bg);
+}

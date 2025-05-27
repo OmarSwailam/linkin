@@ -27,7 +27,7 @@ export default function Navbar() {
                 <Link to="/profile" className="profile-image-link">
                     <img src={profileImage} alt="profile image" className="profile-image" />
                 </Link>
-                <button onClick={handleLogout} className="link">Logout</button>
+                <button onClick={handleLogout} className="link logout-btn">Logout</button>
             </>
         ) : (
             <>
