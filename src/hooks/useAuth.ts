@@ -27,7 +27,7 @@ export function useLogin() {
         mutationFn: loginAPI,
         onSuccess: (data) => {
             login(data);
-            toast.success("Linked!");
+            toast.success("Welcome Back!");
             navigate({ to: "/" });
         },
     });

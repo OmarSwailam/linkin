@@ -20,13 +20,9 @@ const signupRoute = createRoute({
     beforeLoad: ({ context, location }) => {
         const { isAuthenticated } = context;
         if (isAuthenticated) {
-            const redirectTo= new URLSearchParams(location.search).get('redirect') || '/';
+            const redirectTo = new URLSearchParams(location.search).get('redirect') || '/';
             toast.success("You are already logged in.");
-            if (redirectParam) {
-                toast.success("You are already logged in.");
-                throw redirect({ to: redirectParam });
-            }
-            
+            throw redirect({ to: redirectTo });
         }
     },
     getParentRoute: () => rootRoute,
@@ -40,9 +36,7 @@ const loginRoute = createRoute({
         if (isAuthenticated) {
             const redirectTo = new URLSearchParams(location.search).get('redirect') || '/';
             toast.success("You are already logged in.");
-            throw redirect({
-                to: redirectTo
-            });
+            throw redirect({ to: redirectTo });
         }
     },
     getParentRoute: () => rootRoute,
@@ -66,7 +60,7 @@ const homeRoute = createRoute({
     component: HomePage
 })
 
-const profileRoute = createRoute({
+const myProfileRoute = createRoute({
     beforeLoad: ({ context }) => {
         const { isAuthenticated } = context;
         if (!isAuthenticated) {
@@ -82,7 +76,25 @@ const profileRoute = createRoute({
     component: ProfilePage
 })
 
-const routeTree = rootRoute.addChildren([signupRoute, loginRoute, homeRoute, profileRoute])
+const userProfileRoute = createRoute({
+    beforeLoad: ({ context, params }) => {
+        const { isAuthenticated } = context;
+        if (!isAuthenticated) {
+            toast.error("You must be logged in to view this page.");
+            throw redirect({
+                to: "/login",
+                search: { redirect: `/profile/${params.uuid}` }
+            })
+        }
+    },
+    getParentRoute: () => rootRoute,
+    path: "/profile/$uuid",
+    component: ProfilePage
+})
+
+const routeTree = rootRoute.addChildren(
+    [signupRoute, loginRoute, homeRoute, myProfileRoute, userProfileRoute]
+)
 
 export const router = createRouter({ routeTree })
 
