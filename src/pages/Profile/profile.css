@@ -1,0 +1,66 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-image {
+    height: 300px;
+    object-fit: cover;
+    border-radius: var(--radius-xl);
+}
+
+.profile-name {
+    font-size: 4rem;
+}
+
+.title {
+    font-size: 2rem;
+    color: gray;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.numbers {
+    display: flex;
+    gap: 2em;
+    color: gray;
+}
+
+.following,
+.followers {
+    font-size: 1.5rem;
+}
+
+.following span,
+.followers span {
+    font-weight: 600;
+}
+
+.skills-label {
+    font-size: 1.5rem;
+    color: rgb(37, 37, 37);
+    margin-top: 30px;
+}
+
+.skills {
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 20px;
+}
+
+.skill {
+    border-radius: var(--radius-sm);
+    background-color: #e7e7e7;
+    padding: 0.4em 0.5em;
+}

@@ -73,7 +73,7 @@ const myProfileRoute = createRoute({
     },
     getParentRoute: () => rootRoute,
     path: "/profile",
-    component: ProfilePage
+    component: () => <ProfilePage isOwnProfile={true} />,
 })
 
 const userProfileRoute = createRoute({

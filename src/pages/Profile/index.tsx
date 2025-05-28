@@ -1,33 +1,23 @@
 import { useParams } from "@tanstack/react-router";
+import ProfileInfo from "../../components/Profile";
+import "./profile.css"
 import { useUserProfile } from "../../hooks/useUser";
+import ProfileSkeleton from "../../components/Profile/ProfileSkeleton";
 
-export default function ProfilePage() {
-    let uuid: string | undefined;
 
-    try {
-        ({ uuid } = useParams({ from: "/profile/$uuid" }));
-    } catch {
-        uuid = undefined;
-    }
+export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: boolean }) {
+    const params = isOwnProfile ? undefined : useParams({ from: "/profile/$uuid" });
+    const uuid = params?.uuid;
 
     const { data, isLoading } = useUserProfile(uuid);
-    console.log(data)
 
-    return <div className="page profile-page">
-        <div className="profile-info">
-            <img className="profile-image" src="/profile-placeholder.png" />
-            <h2 className="profile-name">{data?.first_name} {data?.last_name}</h2>
-            <h3 className="title">{data?.title}</h3>
-            <div className="counts">
-                <p className="following">{data?.following_count} Following</p>
-                <p className="followers">{data?.followers_count} Followers</p>
-            </div>
-            <div className="skills">
-                {data?.skills.map(skill => <div>{skill}</div>)}
-            </div>
+    return (
+        <div className="page profile-page">
+            {isLoading ? <ProfileSkeleton /> : <ProfileInfo user={data} />}
         </div>
+    )
 
-        {/* <div className="posts">
+    {/* <div className="posts">
             <div className="post">
                 <img />
                 <div className="post-info">
@@ -45,5 +35,4 @@ export default function ProfilePage() {
                 </div>
             </div>
         </div> */}
-    </div>
 }

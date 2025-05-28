@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import type { User } from "../types";
-import { user } from "../api/users";
+import { fetchUser } from "../api/users";
 
 export function useUserProfile(uuid?: string) {
     return useQuery<User, Error>({
         queryKey: ["user", uuid || "me"],
-        queryFn: () => user({ uuid }),
+        queryFn: () => fetchUser({ uuid }),
         staleTime: 1000 * 5 * 60,
     });
 }
