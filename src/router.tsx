@@ -4,8 +4,8 @@ import HomePage from "./pages/Home";
 import ProfilePage from "./pages/Profile";
 import SignupPage from "./pages/Signup";
 import LoginPage from "./pages/Login";
-import type { AuthContextType } from "./context/AuthContext";
 import toast from "react-hot-toast";
+import { isAuthenticated } from "./utils/auth";
 
 const rootRoute = createRootRoute({
     component: () => {
@@ -17,37 +17,38 @@ const rootRoute = createRootRoute({
 })
 
 const signupRoute = createRoute({
-    beforeLoad: ({ context, location }) => {
-        const { isAuthenticated } = context;
-        if (isAuthenticated) {
+    path: "/signup",
+    component: SignupPage,
+    getParentRoute: () => rootRoute,
+    beforeLoad: ({ location }) => {
+        if (isAuthenticated()) {
             const redirectTo = new URLSearchParams(location.search).get('redirect') || '/';
             toast.success("You are already logged in.");
             throw redirect({ to: redirectTo });
         }
     },
-    getParentRoute: () => rootRoute,
-    path: "/signup",
-    component: SignupPage
 })
 
 const loginRoute = createRoute({
-    beforeLoad: ({ context, location }) => {
-        const { isAuthenticated } = context;
-        if (isAuthenticated) {
+    path: "/login",
+    component: LoginPage,
+    getParentRoute: () => rootRoute,
+    beforeLoad: ({ location }) => {
+        if (isAuthenticated()) {
             const redirectTo = new URLSearchParams(location.search).get('redirect') || '/';
             toast.success("You are already logged in.");
             throw redirect({ to: redirectTo });
         }
     },
-    getParentRoute: () => rootRoute,
-    path: "/login",
-    component: LoginPage
+
 })
 
 const homeRoute = createRoute({
-    beforeLoad: ({ context }) => {
-        const { isAuthenticated } = context;
-        if (!isAuthenticated) {
+    path: "/",
+    component: HomePage,
+    getParentRoute: () => rootRoute,
+    beforeLoad: () => {
+        if (!isAuthenticated()) {
             toast.error("You must be logged in to view this page.");
             throw redirect({
                 to: "/login",
@@ -55,15 +56,15 @@ const homeRoute = createRoute({
             })
         }
     },
-    getParentRoute: () => rootRoute,
-    path: "/",
-    component: HomePage
+
 })
 
 const myProfileRoute = createRoute({
-    beforeLoad: ({ context }) => {
-        const { isAuthenticated } = context;
-        if (!isAuthenticated) {
+    path: "/profile",
+    component: () => <ProfilePage isOwnProfile={true} />,
+    getParentRoute: () => rootRoute,
+    beforeLoad: () => {
+        if (!isAuthenticated()) {
             toast.error("You must be logged in to view this page.");
             throw redirect({
                 to: "/login",
@@ -71,15 +72,15 @@ const myProfileRoute = createRoute({
             })
         }
     },
-    getParentRoute: () => rootRoute,
-    path: "/profile",
-    component: () => <ProfilePage isOwnProfile={true} />,
+
 })
 
 const userProfileRoute = createRoute({
-    beforeLoad: ({ context, params }) => {
-        const { isAuthenticated } = context;
-        if (!isAuthenticated) {
+    path: "/profile/$uuid",
+    component: ProfilePage,
+    getParentRoute: () => rootRoute,
+    beforeLoad: ({ params }) => {
+        if (!isAuthenticated()) {
             toast.error("You must be logged in to view this page.");
             throw redirect({
                 to: "/login",
@@ -87,9 +88,7 @@ const userProfileRoute = createRoute({
             })
         }
     },
-    getParentRoute: () => rootRoute,
-    path: "/profile/$uuid",
-    component: ProfilePage
+
 })
 
 const routeTree = rootRoute.addChildren(

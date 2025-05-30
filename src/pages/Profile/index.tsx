@@ -1,7 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import ProfileInfo from "../../components/Profile";
 import "./profile.css"
-import { useUserProfile } from "../../hooks/useUser";
+import { useUser } from "../../hooks/useUser";
 import ProfileSkeleton from "../../components/Profile/ProfileSkeleton";
 
 
@@ -9,7 +9,7 @@ export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: b
     const params = isOwnProfile ? undefined : useParams({ from: "/profile/$uuid" });
     const uuid = params?.uuid;
 
-    const { data, isLoading } = useUserProfile(uuid);
+    const { data, isLoading } = useUser(uuid);
 
     return (
         <div className="page profile-page">

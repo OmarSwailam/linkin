@@ -11,12 +11,12 @@ export default function LoginForm() {
     const search = useSearch({ from: '/login' });
     const navigate = useNavigate();
 
-    const loginMutation = useLogin();
+    const login = useLogin();
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         if (!email || !password) return;
-        loginMutation.mutate(
+        login.mutate(
             { email, password },
             {
                 onSuccess: () => {
@@ -29,8 +29,8 @@ export default function LoginForm() {
             }
         );
 
-        if (loginMutation.isError) {
-            const axiosError = loginMutation.error as AxiosError<{ error: string }>;
+        if (login.isError) {
+            const axiosError = login.error as AxiosError<{ error: string }>;
             const status = axiosError.response?.status;
             const apiMessage = axiosError.response?.data?.error;
 
@@ -54,7 +54,7 @@ export default function LoginForm() {
             id="password" name="password" type="password" placeholder="********" required />
 
         {
-            loginMutation.isPending ?
+            login.isPending ?
                 <button type="submit" disabled>LOGIN...</button>
                 : <button type="submit">LOGIN</button>
         }

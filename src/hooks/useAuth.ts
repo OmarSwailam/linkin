@@ -1,17 +1,18 @@
-import { useMutation } from "@tanstack/react-query";
-import { signup, login as loginAPI } from "../api/auth";
-import { useAuth } from "../context/AuthContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { signup, login } from "../api/auth";
 import toast from "react-hot-toast";
 import { useNavigate } from "@tanstack/react-router";
+import { clearTokens, storeTokens } from "../utils/auth";
 
 export function useSignup() {
-    const { login } = useAuth();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: signup,
-        onSuccess: (data) => {
-            login(data);
+        onSuccess: async (data) => {
+            storeTokens(data);
+            await queryClient.invalidateQueries({ queryKey: ["user", "me"] });
             toast.success("Account Created!");
             navigate({ to: "/profile" });
         },
@@ -20,15 +21,28 @@ export function useSignup() {
 
 
 export function useLogin() {
-    const { login } = useAuth();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: loginAPI,
-        onSuccess: (data) => {
-            login(data);
+        mutationFn: login,
+        onSuccess: async (data) => {
+            storeTokens(data);
+            await queryClient.invalidateQueries({ queryKey: ["user", "me"] });
             toast.success("Welcome Back!");
             navigate({ to: "/" });
         },
     });
+}
+
+export function useLogout() {
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
+    return () => {
+        clearTokens();
+        queryClient.removeQueries({ queryKey: ["user", "me"] });
+        toast.success("Logged out!");
+        navigate({ to: "/login" });
+    };
 }

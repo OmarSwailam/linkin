@@ -13,12 +13,12 @@ export default function SignupForm() {
     const search = useSearch({ from: '/login' });
     const navigate = useNavigate();
 
-    const signupMutation = useSignup();
+    const signup = useSignup();
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         if (!firstName || !lastName || !email || !password) return;
-        signupMutation.mutate(
+        signup.mutate(
             { first_name: firstName, last_name: lastName, email, password },
             {
                 onSuccess: () => {
@@ -34,8 +34,8 @@ export default function SignupForm() {
             }
         );
 
-        if (signupMutation.isError) {
-            const axiosError = signupMutation.error as AxiosError<{ error: string }>;
+        if (signup.isError) {
+            const axiosError = signup.error as AxiosError<{ error: string }>;
             const status = axiosError.response?.status;
             const apiMessage = axiosError.response?.data?.error;
 
@@ -67,7 +67,7 @@ export default function SignupForm() {
             id="password" name="password" type="password" placeholder="********" required />
 
         {
-            signupMutation.isPending ?
+            signup.isPending ?
                 <button type="submit" disabled>SIGNING...</button>
                 : <button type="submit">SIGNUP</button>
         }
