@@ -3,17 +3,22 @@ import ProfileInfo from "../../components/Profile";
 import "./profile.css"
 import { useUser } from "../../hooks/useUser";
 import ProfileSkeleton from "../../components/Profile/ProfileSkeleton";
+import type { AxiosError } from "axios";
 
 
 export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: boolean }) {
     const params = isOwnProfile ? undefined : useParams({ from: "/profile/$uuid" });
     const uuid = params?.uuid;
 
-    const { data, isLoading } = useUser(uuid);
+    const { data, isLoading, isError, error } = useUser(uuid);
+
+    if (isError) {
+        return <p style={{ textAlign: "center", margin: "1em" }}>{`${error.response.data.error}`}</p>;
+    }
 
     return (
         <div className="page profile-page">
-            {isLoading ? <ProfileSkeleton /> : <ProfileInfo user={data} />}
+            {isLoading ? <ProfileSkeleton /> : <ProfileInfo user={data} isOwnProfile={isOwnProfile} />}
         </div>
     )
 
