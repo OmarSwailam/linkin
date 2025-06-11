@@ -9,3 +9,15 @@ export interface User {
     profile_image: string;
     skills: string[];
 }
+
+export type UpdateUserPayload = {
+    first_name: string | null | undefined;
+    last_name: string | null | undefined;
+    title: string | null | undefined;
+    profile_image: string | null | undefined;
+}
+
+export type UpdateUserResponse = {
+    message: string;
+    user: User;
+}

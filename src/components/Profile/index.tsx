@@ -17,7 +17,7 @@ export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwn
             <h3 className="title">{user?.title}</h3>
             <div className="numbers">
                 <p className="followers"><span>{user?.followers_count}</span> Followers</p>
-                <p className="following"><span>{user?.following_count}</span>Following</p>
+                <p className="following"><span>{user?.following_count}</span> Following</p>
             </div>
             <p className="skills-label">skills</p>
 

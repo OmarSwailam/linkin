@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { User } from "../../types";
 import "./ProfileEditModal.css"
+import { useUpdateUser } from "../../hooks/useUser";
 
 export default function ProfileEditModal({ user, onClose }: { user?: User, onClose: () => void }) {
 
@@ -9,9 +10,22 @@ export default function ProfileEditModal({ user, onClose }: { user?: User, onClo
     const [lastName, setLastName] = useState(user?.last_name)
     const [title, setTitle] = useState(user?.title)
 
+    const updateUser = useUpdateUser()
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        updateUser.mutate({
+            profile_image: profileImage,
+            first_name: firstName,
+            last_name: lastName,
+            title
+        })
+        onClose();
+    }
+
     return (
         <div className="profile-edit-modal">
-            <form className="profile-edit-form">
+            <form className="profile-edit-form" onSubmit={handleSubmit}>
                 <div className="close-icon" onClick={() => onClose()}>x</div>
 
                 <label htmlFor="profile-image">Profile Image URL:</label>
@@ -21,6 +35,7 @@ export default function ProfileEditModal({ user, onClose }: { user?: User, onClo
                     id="profile-image"
                     name="profile-image"
                     value={profileImage}
+                    onChange={e => setProfileImage(e.target.value)}
                 />
 
                 <label>Name:</label>
@@ -31,6 +46,7 @@ export default function ProfileEditModal({ user, onClose }: { user?: User, onClo
                         id="first-name"
                         name="first-name"
                         value={firstName}
+                        onChange={e => setFirstName(e.target.value)}
                     />
                     <input
                         type="text"
@@ -38,6 +54,7 @@ export default function ProfileEditModal({ user, onClose }: { user?: User, onClo
                         id="last-name"
                         name="last-name"
                         value={lastName}
+                        onChange={e => setLastName(e.target.value)}
                     />
                 </div>
 
@@ -48,6 +65,7 @@ export default function ProfileEditModal({ user, onClose }: { user?: User, onClo
                     id="title"
                     name="title"
                     value={title}
+                    onChange={e => setTitle(e.target.value)}
                 />
 
                 <div className="buttons">
