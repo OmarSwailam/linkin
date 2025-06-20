@@ -21,3 +21,32 @@ export type UpdateUserResponse = {
     message: string;
     user: User;
 }
+
+export interface PostCreator {
+    uuid: string;
+    name: string;
+    profile_image?: string | undefined;
+    title?: string | undefined;
+}
+
+export interface Post {
+    uuid: string;
+    text: string;
+    images: string[];
+    created_at: string;
+    created_by: PostCreator;
+    comments_count: number;
+}
+export interface PaginatedResponse<T> {
+    page: number;
+    page_size: number;
+    total: number;
+    results: T[];
+}
+
+export type UserPostsResponse = PaginatedResponse<Post>;
+
+export interface PaginationQueryParams {
+    page?: number;
+    page_size?: number;
+}

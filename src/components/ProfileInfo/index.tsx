@@ -1,6 +1,7 @@
 import type { User } from "../../types";
 import { useState } from "react";
 import ProfileEditModal from "../ProfileEditModal";
+import "./profileInfo.css"
 
 export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwnProfile: boolean }) {
     const profileImage = user?.profile_image || "/profile-placeholder.png";

@@ -1,6 +1,6 @@
-import "./profile.css"
+import "./profileInfo.css"
 
-export default function ProfileSkeleton() {
+export default function ProfileInfoSkeleton() {
     return (
         <div className="profile-info">
             <div className="skeleton profile-image" />
