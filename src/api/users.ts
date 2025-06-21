@@ -3,7 +3,7 @@ import { sleep } from "../utils/helpers";
 import api from "./axios"
 
 export async function fetchUser({ uuid }: { uuid?: string }) {
-    await sleep(3000)
+    await sleep(1000)
     let endpoint = uuid ? `/users/${uuid}` : "/users/me"
     const response = await api.get<User>(endpoint);
     return response.data

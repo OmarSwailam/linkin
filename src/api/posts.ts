@@ -3,7 +3,7 @@ import api from "./axios"
 import { sleep } from "../utils/helpers"
 
 export async function fetchUserPosts(uuid?: string, queryParams?: PaginationQueryParams) {
-    await sleep(6000);
+    await sleep(1200);
 
     const endpoint = uuid ? `/users/${uuid}/posts` : "/posts/my-posts"
     const response = await api.get<PaginatedResponse<Post>>(endpoint, {

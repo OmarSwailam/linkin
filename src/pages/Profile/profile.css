@@ -11,3 +11,16 @@ hr {
     border-top: 2px solid var(--chip-bg);
     margin: 1em 0;
 }
+
+.profile-posts {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.profile-posts h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: var(--accent);
+}
