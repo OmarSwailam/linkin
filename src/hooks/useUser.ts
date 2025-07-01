@@ -3,12 +3,14 @@ import type { User, UpdateUserResponse, UpdateUserPayload } from "../types";
 import { fetchUser, updateUser } from "../api/users";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
+import { isAuthenticated } from "../utils/auth";
 
 export function useUser(uuid?: string) {
     return useQuery<User, Error>({
         queryKey: ["user", uuid || "me"],
         queryFn: () => fetchUser({ uuid }),
         staleTime: uuid ? 0 : 1000 * 60 * 60 * 24,
+        enabled: isAuthenticated(),
     });
 }
 

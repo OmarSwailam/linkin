@@ -7,7 +7,6 @@ const api = axios.create({
     },
 });
 
-// Set access token in request
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem("access_token");
     if (token) {
@@ -44,7 +43,9 @@ api.interceptors.response.use(
                 console.error("Refresh failed:", err);
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("refresh_token");
-                window.location.href = "/login";
+                if (window.location.pathname !== "/login") {
+                    window.location.href = "/login";
+                }
                 return Promise.reject(err);
             }
         }
