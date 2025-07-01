@@ -49,13 +49,11 @@ export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: b
 
     useEffect(() => {
         const handleScroll = async () => {
-            console.log("scrolling...");
             if (
                 window.innerHeight + document.documentElement.scrollTop + 1 >=
                 document.documentElement.scrollHeight
             ) {
                 if (hasNextPage) {
-                    console.log("fetching");
                     fetchNextPage()
                 }
             }

@@ -128,6 +128,91 @@
     color: var(--text);
 }
 
+.post-counts {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+.post-count {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: color-mix(in srgb, var(--text) 60%, transparent);
+}
+
+.likes-icon,
+.comments-icon {
+    transition: fill 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.likes-icon {
+    color: #cc2f26;
+}
+
+.likes-icon:hover {
+    fill: #cc2f26;
+    transform: scale(1.2);
+}
+
+
+.comments-icon {
+    color: #318BDA
+}
+
+.comments-icon:hover {
+    fill: #318BDA;
+    transform: scale(1.2);
+}
+
+.post-actions {
+    margin-top: 1rem;
+}
+
+.view-comments-btn {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text);
+}
+
+.view-comments-btn:hover {
+    background-color: #f2f2f2;
+}
+
+.add-comment-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    height: 100%;
+    margin: 0;
+}
+
+.comment-submit {
+    padding: 0.6rem 1rem;
+    border: none;
+    background-color: var(--accent);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.comment-submit:hover {
+    background-color: var(--accent-dark);
+}
+
 .skeleton-post {
     background: var(--bg);
     padding: 1.5rem;

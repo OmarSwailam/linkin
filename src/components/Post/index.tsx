@@ -1,4 +1,7 @@
 import type { Post as PostType } from "../../types";
+import { Heart } from "lucide-react";
+import { MessageCircle } from "lucide-react";
+
 import "./post.css"
 
 export default function Post({ post }: { post?: PostType }) {
@@ -24,6 +27,26 @@ export default function Post({ post }: { post?: PostType }) {
                 )}
 
                 <p className="post-body">{post?.text}</p>
+
+                <div className="post-counts">
+                    <div className="post-count">
+                        <Heart className="likes-icon" size={20}/>
+                        <span>{post?.likes_count}</span>
+                    </div>
+                    <div className="post-count">
+                        <MessageCircle className="comments-icon" size={20}/>
+                        <span>{post?.comments_count}</span>
+                    </div>
+                </div>
+
+                <form className="add-comment-form">
+                    <input
+                        type="text"
+                        placeholder="Write a comment..."
+                        className="comment-input"
+                    />
+                    <button type="submit" className="comment-submit">Post</button>
+                </form>
             </div>
         </div>
 

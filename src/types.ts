@@ -36,6 +36,7 @@ export interface Post {
     created_at: string;
     created_by: PostCreator;
     comments_count: number;
+    likes_count: number;
 }
 export interface PaginatedResponse<T> {
     page: number;
