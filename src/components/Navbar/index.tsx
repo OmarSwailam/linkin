@@ -3,7 +3,7 @@ import ThemeToggle from "../ThemeToggle";
 import Logo from "../Logo";
 import "./Navbar.css";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLogout } from "../../hooks/useAuth";
 import { useUser } from "../../hooks/useUser";
 
@@ -11,6 +11,10 @@ export default function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const [showNavbar, setShowNavbar] = useState(true);
+    const lastScrollY = useRef(0);
+
     const logout = useLogout();
 
     const { data: user, isLoading, error } = useUser();
@@ -22,8 +26,25 @@ export default function Navbar() {
         navigate({ to: "/login" });
     };
 
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+                setShowNavbar(false);
+            } else {
+                setShowNavbar(true);
+            }
+
+            lastScrollY.current = currentScrollY;
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
-        <nav>
+        <nav className={showNavbar ? "nav-show" : "nav-hide"}>
             <div className="nav-left">
                 <Link to="/" className="logo-link">
                     <Logo />

@@ -1,6 +1,6 @@
 nav {
     display: flex;
-    position: sticky;
+    position: fixed;
     top: 0;
     justify-content: space-between;
     align-items: center;
@@ -12,6 +12,15 @@ nav {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     box-shadow: var(--elevation-2);
+    transition: transform 0.3s ease;
+}
+
+.nav-show {
+    transform: translateY(0);
+}
+
+.nav-hide {
+    transform: translateY(-100%);
 }
 
 .nav-left {
