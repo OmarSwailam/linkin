@@ -152,6 +152,10 @@
     color: #cc2f26;
 }
 
+.liked {
+    fill: #cc2f26;
+}
+
 .likes-icon:hover {
     fill: #cc2f26;
     transform: scale(1.2);

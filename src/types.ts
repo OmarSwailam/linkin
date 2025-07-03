@@ -37,6 +37,7 @@ export interface Post {
     created_by: PostCreator;
     comments_count: number;
     likes_count: number;
+    liked: boolean;
 }
 export interface PaginatedResponse<T> {
     page: number;
@@ -50,4 +51,8 @@ export type UserPostsResponse = PaginatedResponse<Post>;
 export interface PaginationQueryParams {
     page?: number;
     page_size?: number;
+}
+
+export type LikePostResponse = {
+    message: string;
 }

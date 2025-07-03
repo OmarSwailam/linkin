@@ -3,17 +3,29 @@ import { Heart } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 
 import "./post.css"
+import { useLikePost, useUnlikePost } from "../../hooks/usePosts";
 
-export default function Post({ post }: { post?: PostType }) {
+export default function Post({ post }: { post: PostType }) {
+    console.log(`post ${post.uuid} liked?: ${post.liked}`)
+    const likePost = useLikePost()
+    const unlikePost = useUnlikePost()
+
+    function handleLike() {
+        if (post.liked) {
+            unlikePost.mutate(post.uuid)
+        } else {
+            likePost.mutate(post.uuid)
+        }
+    }
+
     return (
-
         <div className="post">
             <div className="post-info">
                 <div className="created-by">
-                    <img src={post?.created_by.profile_image} alt={`${post?.created_by.name}'s profile image`} />
+                    <img src={post.created_by.profile_image} alt={`${post.created_by.name}'s profile image`} />
                     <div className="created-by-info">
-                        <h4 className="created-by-name">{post?.created_by.name}</h4>
-                        <h5 className="created-by-title">{post?.created_by.title}</h5>
+                        <h4 className="created-by-name">{post.created_by.name}</h4>
+                        <h5 className="created-by-title">{post.created_by.title}</h5>
                     </div>
                 </div>
                 <p className="post-created-at">{post?.created_at}</p>
@@ -30,12 +42,16 @@ export default function Post({ post }: { post?: PostType }) {
 
                 <div className="post-counts">
                     <div className="post-count">
-                        <Heart className="likes-icon" size={20}/>
-                        <span>{post?.likes_count}</span>
+                        <Heart
+                            className={post.liked ? "likes-icon liked" : " likes-icon"}
+                            size={20}
+                            onClick={handleLike}
+                        />
+                        <span>{post.likes_count}</span>
                     </div>
                     <div className="post-count">
-                        <MessageCircle className="comments-icon" size={20}/>
-                        <span>{post?.comments_count}</span>
+                        <MessageCircle className="comments-icon" size={20} />
+                        <span>{post.comments_count}</span>
                     </div>
                 </div>
 
