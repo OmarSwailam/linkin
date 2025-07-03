@@ -14,14 +14,14 @@ import type { PaginatedResponse, Post as PostType } from "../../types";
 
 export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: boolean }) {
     const params = isOwnProfile ? undefined : useParams({ from: "/profile/$uuid" });
-    const uuid = params?.uuid;
+    const userUuid = params?.uuid;
 
     const {
         data: profileInfoData,
         isLoading: profileInfoIsLoading,
         isError: profileInfoIsError,
         error: profileInfoError
-    } = useUser(uuid);
+    } = useUser(userUuid);
 
     const {
         data: profilePostsData,
@@ -31,7 +31,7 @@ export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: b
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-    } = usePosts(uuid);
+    } = usePosts(userUuid);
 
     useEffect(() => {
         if (profileInfoIsError && profileInfoError instanceof AxiosError) {

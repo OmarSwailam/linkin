@@ -2,10 +2,10 @@ import type { PaginatedResponse, PaginationQueryParams, Post } from "../types"
 import api from "./axios"
 import { sleep } from "../utils/helpers"
 
-export async function fetchUserPosts(uuid?: string, queryParams?: PaginationQueryParams) {
+export async function fetchUserPosts(userUuid?: string, queryParams?: PaginationQueryParams) {
     await sleep(1200);
 
-    const endpoint = uuid ? `/users/${uuid}/posts` : "/posts/my-posts"
+    const endpoint = userUuid ? `/users/${userUuid}/posts` : "/posts/my-posts"
     const response = await api.get<PaginatedResponse<Post>>(endpoint, {
         params: queryParams
     })
