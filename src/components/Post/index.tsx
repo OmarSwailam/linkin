@@ -4,6 +4,7 @@ import { MessageCircle } from "lucide-react";
 
 import "./post.css"
 import { useLikePost, useUnlikePost } from "../../hooks/usePosts";
+import { formatDateTime } from "../../utils/helpers";
 
 export default function Post({ post }: { post: PostType }) {
     console.log(`post ${post.uuid} liked?: ${post.liked}`)
@@ -28,7 +29,7 @@ export default function Post({ post }: { post: PostType }) {
                         <h5 className="created-by-title">{post.created_by.title}</h5>
                     </div>
                 </div>
-                <p className="post-created-at">{post?.created_at}</p>
+                <p className="post-created-at">{formatDateTime(post?.created_at)}</p>
 
                 {post?.images?.length > 0 && (
                     <div className={`post-images layout-${Math.min(post?.images.length, 5)}`}>
