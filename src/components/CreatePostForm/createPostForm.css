@@ -1,0 +1,131 @@
+.create-post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: var(--bg);
+    padding: 1.5rem;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--elevation-1);
+}
+
+.create-post-textarea {
+    min-height: 100px;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--chip-bg);
+    font-size: 1rem;
+    resize: vertical;
+    background-color: var(--bg);
+}
+
+.image-url-input {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-url-input input {
+    flex: 1;
+    padding: 0.55rem 0.75rem;
+    margin: 0;
+    border-radius: 6px;
+    border: 1px solid var(--chip-bg);
+    font-size: 0.95rem;
+}
+
+.image-url-input button {
+    padding: 0.55rem 1rem;
+    border: none;
+    background-color: var(--accent);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+    height: 100%;
+}
+
+.image-url-input button:hover {
+    background-color: var(--accent-dark);
+}
+
+.create-post-images-preview {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.create-post-images-preview img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.create-post-images-preview img:hover {
+    transform: scale(1.05);
+}
+
+.create-post-form button[type="submit"] {
+    background-color: var(--accent);
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.create-post-form button[type="submit"]:hover {
+    background-color: var(--accent-dark);
+
+}
+
+.create-post-form button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.image-preview-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.image-preview-wrapper img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 6px;
+    transition: transform 0.2s ease;
+}
+
+.image-preview-wrapper img:hover {
+    transform: scale(1.05);
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #cc2f26;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 10px;
+    height: 30px;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+}
+
+.remove-image-btn:hover {
+    background: #a82620;
+
+}

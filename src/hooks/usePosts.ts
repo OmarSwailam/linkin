@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { fetchUserPosts, likePost, unlikePost } from "../api/posts"
-import type { PaginatedResponse, Post } from "../types";
+import { createPost, fetchUserPosts, likePost, unlikePost } from "../api/posts"
+import type { CreatePostPayload, CreatePostResponse, PaginatedResponse, Post } from "../types";
 import toast from "react-hot-toast";
 
 export function useMyPosts() {
@@ -96,6 +96,36 @@ export function useUnlikePost() {
         },
         onError: (err) => {
             toast.error(err.response?.data?.error || "Failed to unlike post.");
+        },
+    });
+}
+
+export function useCreatePost() {
+    const queryClient = useQueryClient()
+
+    return useMutation<CreatePostResponse, Error, CreatePostPayload>({
+        mutationFn: createPost,
+        onSuccess: (data) => {
+            queryClient.setQueryData(["my-posts"], (oldData: any) => {
+                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+
+                return {
+                    ...oldData,
+                    pages: [
+                        {
+                            ...oldData.pages[0],
+                            results: [data, ...oldData.pages[0].results],
+                        },
+                        ...oldData.pages.slice(1),
+                    ],
+                };
+            });
+
+            toast.success("Post created");
+        },
+        onError: (error) => {
+            const message = (error as any)?.response?.data?.error || "Failed to create post";
+            toast.error(message);
         },
     });
 }

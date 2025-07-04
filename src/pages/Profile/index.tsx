@@ -10,6 +10,7 @@ import { useMyPosts, usePosts } from "../../hooks/usePosts";
 import Post from "../../components/Post";
 import PostSkeleton from "../../components/Post/PostsSkeleton";
 import type { PaginatedResponse, Post as PostType } from "../../types";
+import CreatePostForm from "../../components/CreatePostForm";
 
 
 export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: boolean }) {
@@ -69,17 +70,18 @@ export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: b
             {profileInfoIsError && <p style={{ textAlign: "center", margin: "1em" }}>Page does not exist</p>}
             <hr />
             <div className="profile-posts">
-                <h2>Posts</h2>
+                {isOwnProfile ? <CreatePostForm /> : null}
                 {profilePostsIsLoading ? (
                     <PostSkeleton />
                 ) : (
                     <>
-                        {profilePostsData?.pages.map((page: PaginatedResponse<PostType>, pageIndex: number) =>
-                            page.results.map((post) => (
-                                <Post key={post.uuid} post={post} />
-                            ))
-                        )}
-                        {isFetchingNextPage && <PostSkeleton />}
+                        {profilePostsData?.pages.map((page: PaginatedResponse<PostType>, pageIndex: number) => (
+                            <div key={pageIndex}>
+                                {page.results.map((post) => (
+                                    <Post key={post.uuid} post={post} />
+                                ))}
+                            </div>
+                        ))}
                     </>
                 )}
             </div>

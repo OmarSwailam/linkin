@@ -73,3 +73,23 @@ export interface CommentType {
     liked: boolean;
     created_by: CommentAuthor;
 }
+
+
+export interface CreatePostPayload {
+    text?: string
+    images?: string[]
+}
+
+export interface CreatePostResponse {
+    post_uuid: string
+    user_uuid: string
+    text: string
+    images: string[]
+    created_at: string
+    created_by: {
+        uuid: string
+        name: string
+        profile_image: string
+        title: string
+    }
+}
