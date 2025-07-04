@@ -1,5 +1,6 @@
 :root {
   --bg: #F0F4F8;
+  --bg-darker: color-mix(in srgb, var(--bg) 80%, rgb(233, 233, 233));
   --text: #1A1D23;
   --text-secondary: #666;
   --accent: #318BDA;
@@ -19,6 +20,7 @@
 
 .dark {
   --bg: #11161D;
+  --bg-darker: color-mix(in srgb, var(--bg) 85%, rgb(0, 0, 0));
   --text: #F0F4F8;
   --text-secondary: #bbbbbb;
   --accent: #318BDA;

@@ -56,3 +56,20 @@ export interface PaginationQueryParams {
 export type LikePostResponse = {
     message: string;
 }
+
+export interface CommentAuthor {
+    uuid: string;
+    name: string;
+    profile_image?: string;
+    title?: string;
+}
+
+export interface CommentType {
+    uuid: string;
+    text: string;
+    created_at: string;
+    likes_count: number;
+    replies_count: number;
+    liked: boolean;
+    created_by: CommentAuthor;
+}
