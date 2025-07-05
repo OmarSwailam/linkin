@@ -3,15 +3,18 @@ import type { CommentType } from "../../types";
 import "./comment.css";
 import { formatDateTime } from "../../utils/helpers";
 import { useNavigate } from "@tanstack/react-router";
+import { useLikeComment, useUnlikeComment } from "../../hooks/useComments";
 
 interface CommentProps {
     comment: CommentType;
-    onLike?: (uuid: string) => void;
-    onReply?: (uuid: string) => void;
+    postUuid: string;
 }
 
-export default function Comment({ comment, onLike, onReply }: CommentProps) {
+export default function Comment({ comment, postUuid }: CommentProps) {
     const navigate = useNavigate();
+
+    const likeComment = useLikeComment(postUuid)
+    const unlikeComment = useUnlikeComment(postUuid)
 
     const {
         uuid,
@@ -26,6 +29,18 @@ export default function Comment({ comment, onLike, onReply }: CommentProps) {
     const handleUserClick = () => {
         navigate({ to: "/profile/$uuid", params: { uuid: created_by.uuid } });
     };
+
+    function handleLike() {
+        if (liked) {
+            unlikeComment.mutate(uuid)
+        } else {
+            likeComment.mutate(uuid)
+        }
+    }
+
+    function setReplaysComments(arg0: boolean): void {
+        throw new Error("Function not implemented.");
+    }
 
     return (
         <div className="comment">
@@ -45,15 +60,18 @@ export default function Comment({ comment, onLike, onReply }: CommentProps) {
             <p className="comment-text">{text}</p>
 
             <div className="comment-actions">
-                <div className="comment-action" onClick={() => onLike?.(uuid)}>
+                <div className="comment-action">
                     <Heart
                         className={liked ? "comment-like-icon liked" : "comment-like-icon"}
                         size={18}
+                        onClick={handleLike}
                     />
                     <span>{likes_count}</span>
                 </div>
-                <div className="comment-action" onClick={() => onReply?.(uuid)}>
-                    <MessageCircle className="comment-reply-icon" size={18} />
+                <div className="comment-action" >
+                    <MessageCircle className="comment-reply-icon" size={18}
+                        onClick={() => setReplaysComments(true)}
+                    />
                     <span>{replies_count}</span>
                 </div>
             </div>

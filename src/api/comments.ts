@@ -9,3 +9,15 @@ export async function getPostComments(postUuid?: string, queryParams?: Paginatio
     })
     return response.data
 }
+
+export async function likeComment(commentUuid: string) {
+    const endpoint = `/comments/${commentUuid}/like`
+    const response = await api.post(endpoint)
+    return response.data
+}
+
+export async function unlikeComment(commentUuid: string) {
+    const endpoint = `/comments/${commentUuid}/like`
+    const response = await api.delete(endpoint)
+    return response.data
+}

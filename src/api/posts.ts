@@ -23,7 +23,5 @@ export async function unlikePost(postUuid: string) {
 
 export async function createPost(payload: CreatePostPayload): Promise<CreatePostResponse> {
     const response = await api.post<CreatePostResponse>("/posts", payload)
-    console.log(response)
-    console.log(response.data)
     return response.data
 }
