@@ -68,7 +68,9 @@ export default function Post({ post }: { post: PostType }) {
                 {post?.images?.length > 0 && (
                     <div className={`post-images layout-${Math.min(post?.images.length, 5)}`}>
                         {post?.images.map((image, idx) => (
-                            <img key={idx} src={image} alt={`Post image ${idx + 1}`} />
+                            <img key={idx} src={image} alt={`Post image ${idx + 1}`}
+                                onClick={() => window.open(image)}
+                            />
                         ))}
                     </div>
                 )}
