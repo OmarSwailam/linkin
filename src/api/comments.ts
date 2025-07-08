@@ -1,4 +1,4 @@
-import type { PaginatedResponse, PaginationQueryParams, CommentType } from "../types"
+import type { PaginatedResponse, PaginationQueryParams, CommentType, CreateCommentPayload, CreateCommentResponse } from "../types"
 import api from "./axios"
 
 
@@ -20,4 +20,11 @@ export async function unlikeComment(commentUuid: string) {
     const endpoint = `/comments/${commentUuid}/like`
     const response = await api.delete(endpoint)
     return response.data
+}
+
+export async function createCommentOnPost(
+    payload: CreateCommentPayload
+): Promise<CreateCommentResponse> {
+    const response = await api.post<CreateCommentResponse>("/comments/", payload);
+    return response.data;
 }

@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import "./post.css"
 import { useLikePost, useUnlikePost } from "../../hooks/usePosts";
 import { formatDateTime } from "../../utils/helpers";
-import { useComments } from "../../hooks/useComments";
+import { useComments, useCreateCommentOnPost } from "../../hooks/useComments";
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import CommentSkeleton from "../Comment/CommentSkeleton";
@@ -49,6 +49,23 @@ export default function Post({ post }: { post: PostType }) {
     const handleUserClick = () => {
         navigate({ to: "/profile/$uuid", params: { uuid: created_by.uuid } });
     };
+
+    const [commentText, setCommentText] = useState("");
+    const createComment = useCreateCommentOnPost(post.uuid);
+
+    function handleAddComment(e: React.FormEvent) {
+        e.preventDefault();
+
+        const text = commentText.trim();
+        if (!text) {
+            toast.error("Comment cannot be empty");
+            return;
+        }
+
+        createComment.mutate({ text, post_uuid: post.uuid });
+        setCommentText("");
+    }
+
 
 
     return (
@@ -95,11 +112,13 @@ export default function Post({ post }: { post: PostType }) {
                     </div>
                 </div>
 
-                <form className="add-comment-form">
+                <form className="add-comment-form" onSubmit={handleAddComment}>
                     <input
                         type="text"
                         placeholder="Write a comment..."
                         className="comment-input"
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
                         onFocus={() => setShowComments(true)}
                     />
                     <button type="submit" className="comment-submit">Comment</button>

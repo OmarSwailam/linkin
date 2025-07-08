@@ -36,3 +36,34 @@ export function formatDateTime(dateString: string): string {
 
     return `${dayPart} at ${timePart}`;
 }
+
+
+export function updateCommentCountInAllPosts(
+    queryClient,
+    postUuid: string,
+    delta: number = 1
+) {
+    // const postQueryKeys = [["my-posts"], ["following-posts"], ["suggested-posts"]];
+    const postQueryKeys = [["my-posts"]];
+
+    for (const key of postQueryKeys) {
+        queryClient.setQueriesData(key, (oldData: any) => {
+            if (!oldData?.pages) return oldData;
+
+            return {
+                ...oldData,
+                pages: oldData.pages.map((page: any) => ({
+                    ...page,
+                    results: page.results.map((post: any) =>
+                        post.uuid === postUuid
+                            ? {
+                                ...post,
+                                comments_count: (post.comments_count || 0) + delta,
+                            }
+                            : post
+                    ),
+                })),
+            };
+        });
+    }
+}

@@ -4,9 +4,10 @@ import {
     useQueryClient,
     type UseInfiniteQueryResult,
 } from "@tanstack/react-query";
-import { getPostComments, likeComment, unlikeComment } from "../api/comments";
-import type { CommentType, PaginatedResponse } from "../types";
+import { createCommentOnPost, getPostComments, likeComment, unlikeComment } from "../api/comments";
+import type { CommentType, CreateCommentPayload, CreateCommentResponse, PaginatedResponse } from "../types";
 import toast from "react-hot-toast";
+import { updateCommentCountInAllPosts } from "../utils/helpers";
 
 // typescript is shit
 
@@ -101,6 +102,41 @@ export function useUnlikeComment(postUuid: string) {
         },
         onError: (err) => {
             toast.error(err.response?.data?.error || "Failed to unlike comment.");
+        },
+    });
+}
+export function useCreateCommentOnPost(postUuid: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation<CreateCommentResponse, Error, CreateCommentPayload>({
+        mutationFn: createCommentOnPost,
+        onSuccess: (newComment, variables) => {
+            toast.success("Comment created");
+
+            queryClient.setQueriesData(
+                ["post-comments", postUuid],
+                (oldData: PaginatedResponse<CommentType> | undefined) => {
+                    if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+
+                    return {
+                        ...oldData,
+                        pages: [
+                            {
+                                ...oldData.pages[0],
+                                results: [newComment, ...oldData.pages[0].results],
+                            },
+                            ...oldData.pages.slice(1),
+                        ],
+                    };
+                }
+            );
+
+            if (variables.post_uuid) {
+                updateCommentCountInAllPosts(queryClient, variables.post_uuid);
+            }
+        },
+        onError: (error) => {
+            toast.error(error.message || "Failed to create comment.");
         },
     });
 }

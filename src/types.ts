@@ -93,3 +93,15 @@ export interface CreatePostResponse {
         title: string
     }
 }
+
+export interface CreateCommentPayload {
+    text: string;
+    post_uuid?: string;
+    comment_uuid?: string;
+}
+
+export type CreateCommentResponse = CommentType;
+
+export interface CreateCommentErrorResponse {
+    error: string;
+}
