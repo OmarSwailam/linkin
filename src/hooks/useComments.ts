@@ -4,8 +4,8 @@ import {
     useQueryClient,
     type UseInfiniteQueryResult,
 } from "@tanstack/react-query";
-import { createCommentOnPost, getPostComments, likeComment, unlikeComment } from "../api/comments";
-import type { CommentType, CreateCommentPayload, CreateCommentResponse, PaginatedResponse } from "../types";
+import { createCommentOnPost, getCommentReplies, getPostComments, likeComment, unlikeComment } from "../api/comments";
+import type { CommentReplyType, CommentType, CreateCommentPayload, CreateCommentResponse, PaginatedResponse } from "../types";
 import toast from "react-hot-toast";
 import { updateCommentCountInAllPosts } from "../utils/helpers";
 
@@ -105,6 +105,7 @@ export function useUnlikeComment(postUuid: string) {
         },
     });
 }
+
 export function useCreateCommentOnPost(postUuid: string) {
     const queryClient = useQueryClient();
 
@@ -137,6 +138,20 @@ export function useCreateCommentOnPost(postUuid: string) {
         },
         onError: (error) => {
             toast.error(error.message || "Failed to create comment.");
+        },
+    });
+}
+
+export function useCommentReplies(commentUuid: string, pageSize = 5, enabled = true) {
+    return useInfiniteQuery<PaginatedResponse<CommentReplyType>>({
+        queryKey: ["comment-replies", commentUuid],
+        queryFn: ({ pageParam = 1 }) =>
+            getCommentReplies(commentUuid, { page: pageParam, page_size: pageSize }),
+        initialPageParam: 1,
+        enabled: !!commentUuid && enabled,
+        getNextPageParam: (lastPage) => {
+            const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
+            return hasMore ? lastPage.page + 1 : undefined;
         },
     });
 }

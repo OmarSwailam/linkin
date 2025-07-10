@@ -3,7 +3,12 @@ import type { CommentType } from "../../types";
 import "./comment.css";
 import { formatDateTime } from "../../utils/helpers";
 import { useNavigate } from "@tanstack/react-router";
-import { useLikeComment, useUnlikeComment } from "../../hooks/useComments";
+import { useCommentReplies, useLikeComment, useUnlikeComment } from "../../hooks/useComments";
+import { useEffect, useState, type FormEvent } from "react";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import ReplySkeleton from "../Reply/ReplySkeleton";
+import Reply from "../Reply";
 
 interface CommentProps {
     comment: CommentType;
@@ -38,7 +43,27 @@ export default function Comment({ comment, postUuid }: CommentProps) {
         }
     }
 
-    function setReplaysComments(arg0: boolean): void {
+    const [showReplies, setShowReplies] = useState(false);
+
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+        isError,
+        error,
+    } = useCommentReplies(comment.uuid, 5, showReplies);
+
+    useEffect(() => {
+        if (isError && error instanceof AxiosError) {
+            toast.error(error.response?.data?.error || "Failed to load replies");
+        }
+    }, [isError, error]);
+
+    const [replyText, setreplyText] = useState("");
+
+    function handleAddreply(event: FormEvent<HTMLFormElement>): void {
         throw new Error("Function not implemented.");
     }
 
@@ -70,11 +95,51 @@ export default function Comment({ comment, postUuid }: CommentProps) {
                 </div>
                 <div className="comment-action" >
                     <MessageCircle className="comment-reply-icon" size={18}
-                        onClick={() => setReplaysComments(true)}
+                        onClick={() => setShowReplies(true)}
                     />
                     <span>{replies_count}</span>
                 </div>
+
+                <form className="add-reply-form" onSubmit={handleAddreply}>
+                    <input
+                        type="text"
+                        placeholder="reply..."
+                        className="reply-input"
+                        value={replyText}
+                        onChange={(e) => setreplyText(e.target.value)}
+                        onFocus={() => setShowReplies(true)}
+                    />
+                    <button type="submit" className="reply-submit">reply</button>
+                </form>
+
             </div>
+
+            {showReplies && (
+                <div className="comment-replies">
+
+                    {isLoading ? (
+                        Array.from({ length: 3 }).map((_, i) => <ReplySkeleton key={i} />)
+                    ) : (
+                        <>
+                            {data?.pages.map((page, pageIndex) =>
+                                page.results.map((reply) => (
+                                    <Reply key={reply.uuid} reply={reply} commentUuid={comment.uuid} />
+                                ))
+                            )}
+                            {isFetchingNextPage && <ReplySkeleton />}
+                        </>
+                    )}
+
+                    {hasNextPage && !isFetchingNextPage && (
+                        <button
+                            className="view-more-replys"
+                            onClick={() => fetchNextPage()}
+                        >
+                            View more replies
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

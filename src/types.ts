@@ -105,3 +105,17 @@ export type CreateCommentResponse = CommentType;
 export interface CreateCommentErrorResponse {
     error: string;
 }
+
+export interface CommentReplyType {
+    uuid: string;
+    text: string;
+    created_at: string;
+    likes_count: number;
+    liked: boolean;
+    created_by: {
+        uuid: string;
+        name: string;
+        profile_image: string;
+        title?: string;
+    };
+}

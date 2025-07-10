@@ -134,7 +134,7 @@ export default function Post({ post }: { post: PostType }) {
                         <>
                             {data?.pages.map((page, pageIndex) =>
                                 page.results.map((comment) => (
-                                    <Comment key={comment.uuid} comment={comment} />
+                                    <Comment key={comment.uuid} comment={comment} postUuid={post.uuid} />
                                 ))
                             )}
                             {isFetchingNextPage && <CommentSkeleton />}
