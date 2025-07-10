@@ -17,9 +17,8 @@ export function useMyPosts() {
     });
 }
 
-export function usePosts(userUuid?: string) {
-    // TODO: make this function deal with a user posts by uuid only and not the current user posts
-    const key = userUuid ? ["user", `${userUuid}`, "posts"] : ["my-posts"]
+export function usePosts(userUuid: string) {
+    const key = ["user", `${userUuid}`, "posts"] 
     return useInfiniteQuery({
         queryKey: key,
         queryFn: ({ pageParam = 1 }) => fetchUserPosts(userUuid, { page: pageParam, page_size: 10 }),

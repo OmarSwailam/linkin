@@ -96,8 +96,7 @@ export interface CreatePostResponse {
 
 export interface CreateCommentPayload {
     text: string;
-    post_uuid?: string;
-    comment_uuid?: string;
+    post_uuid: string;
 }
 
 export type CreateCommentResponse = CommentType;
@@ -119,3 +118,10 @@ export interface CommentReplyType {
         title?: string;
     };
 }
+
+export interface CreateReplayPayload {
+    text: string;
+    comment_uuid: string;
+}
+
+export type CreateReplayResponse = CommentReplyType;

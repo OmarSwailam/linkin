@@ -2,12 +2,12 @@ import {
     useInfiniteQuery,
     useMutation,
     useQueryClient,
+    type InfiniteData,
     type UseInfiniteQueryResult,
 } from "@tanstack/react-query";
-import { createCommentOnPost, getCommentReplies, getPostComments, likeComment, likeReply, unlikeComment, unlikeReply } from "../api/comments";
-import type { CommentReplyType, CommentType, CreateCommentPayload, CreateCommentResponse, PaginatedResponse } from "../types";
+import { createCommentOnPost, createReplayOnComment, getCommentReplies, getPostComments, likeComment, likeReply, unlikeComment, unlikeReply } from "../api/comments";
+import type { CommentReplyType, CommentType, CreateCommentPayload, CreateCommentResponse, CreateReplayPayload, PaginatedResponse } from "../types";
 import toast from "react-hot-toast";
-import { updateCommentCountInAllPosts } from "../utils/helpers";
 
 // typescript is shit
 
@@ -35,8 +35,6 @@ export function useComments(
         },
     });
 }
-
-
 
 export function useLikeComment(postUuid: string) {
     const queryClient = useQueryClient();
@@ -116,25 +114,42 @@ export function useCreateCommentOnPost(postUuid: string) {
 
             queryClient.setQueriesData(
                 ["post-comments", postUuid],
-                (oldData: PaginatedResponse<CommentType> | undefined) => {
-                    if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+                (oldData: any) => {
+                    if (!oldData?.pages || !Array.isArray(oldData.pages)) return oldData;
+
+                    const updatedPages = [...oldData.pages];
+                    if (updatedPages[0]) {
+                        updatedPages[0] = {
+                            ...updatedPages[0],
+                            results: [newComment, ...updatedPages[0].results],
+                            total: updatedPages[0].total + 1
+                        };
+                    }
 
                     return {
                         ...oldData,
-                        pages: [
-                            {
-                                ...oldData.pages[0],
-                                results: [newComment, ...oldData.pages[0].results],
-                            },
-                            ...oldData.pages.slice(1),
-                        ],
+                        pages: updatedPages,
                     };
                 }
             );
 
-            if (variables.post_uuid) {
-                updateCommentCountInAllPosts(queryClient, variables.post_uuid);
-            }
+            const commentedPostUuid = variables.post_uuid;
+            const postRelatedKeys = ["my-posts", "posts", "following-posts", "suggested-posts"];
+
+            queryClient.invalidateQueries({
+                predicate: (query) => {
+                    const key = query.queryKey[0];
+                    if (!postRelatedKeys.includes(key)) return false;
+
+                    const data: any = queryClient.getQueryData(query.queryKey);
+                    if (!data?.pages) return false;
+
+                    return data.pages.some((page: any) =>
+                        page.results.some((post: any) => post.uuid === commentedPostUuid)
+                    );
+                }
+            });
+
         },
         onError: (error) => {
             toast.error(error.message || "Failed to create comment.");
@@ -220,6 +235,47 @@ export function useUnlikeReply(commentUuid: string) {
         },
         onError: (err: any) => {
             toast.error(err.response?.data?.error || "Failed to unlike reply.");
+        },
+    });
+}
+
+export function useCreateReplyOnComment(commentUuid: string, postUuid: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation<CommentReplyType, Error, CreateReplayPayload>({
+        mutationFn: createReplayOnComment,
+        onSuccess: (newReply, variables) => {
+            toast.success("Reply added");
+
+            queryClient.setQueriesData(
+                ["comment-replies", commentUuid],
+                (
+                    oldData: InfiniteData<PaginatedResponse<CommentReplyType>> | undefined
+                ) => {
+                    if (!oldData?.pages || !Array.isArray(oldData.pages)) return oldData;
+
+                    const firstPage = oldData.pages[0];
+                    const rest = oldData.pages.slice(1);
+
+                    return {
+                        ...oldData,
+                        pages: [
+                            {
+                                ...firstPage,
+                                results: [newReply, ...firstPage.results],
+                                total: firstPage.total + 1,
+                            },
+                            ...rest,
+                        ],
+                        pageParams: oldData.pageParams ?? [1],
+                    };
+                }
+            );
+
+            queryClient.invalidateQueries(["post-comments", postUuid]);
+        },
+        onError: (error) => {
+            toast.error(error.message || "Failed to add reply.");
         },
     });
 }

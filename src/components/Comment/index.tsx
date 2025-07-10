@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import ReplySkeleton from "../Reply/ReplySkeleton";
 import Reply from "../Reply";
+import { useCreateReplyOnComment } from "../../hooks/useComments";
 
 interface CommentProps {
     comment: CommentType;
@@ -61,10 +62,22 @@ export default function Comment({ comment, postUuid }: CommentProps) {
         }
     }, [isError, error]);
 
-    const [replyText, setreplyText] = useState("");
+    const [replyText, setReplyText] = useState("");
 
-    function handleAddreply(event: FormEvent<HTMLFormElement>): void {
-        throw new Error("Function not implemented.");
+    const createReply = useCreateReplyOnComment(comment.uuid, postUuid);
+
+
+    function handleAddReply(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        const text = replyText.trim();
+        if (!text) {
+            toast.error("Reply cannot be empty");
+            return;
+        }
+
+        createReply.mutate({ text, comment_uuid: comment.uuid });
+        setReplyText("");
     }
 
     return (
@@ -100,13 +113,13 @@ export default function Comment({ comment, postUuid }: CommentProps) {
                     <span>{replies_count}</span>
                 </div>
 
-                <form className="add-reply-form" onSubmit={handleAddreply}>
+                <form className="add-reply-form" onSubmit={handleAddReply}>
                     <input
                         type="text"
                         placeholder="reply..."
                         className="reply-input"
                         value={replyText}
-                        onChange={(e) => setreplyText(e.target.value)}
+                        onChange={(e) => setReplyText(e.target.value)}
                         onFocus={() => setShowReplies(true)}
                     />
                     <button type="submit" className="reply-submit">reply</button>

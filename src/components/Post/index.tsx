@@ -47,7 +47,7 @@ export default function Post({ post }: { post: PostType }) {
     }, [isError, error]);
 
     const handleUserClick = () => {
-        navigate({ to: "/profile/$uuid", params: { uuid: created_by.uuid } });
+        navigate({ to: "/profile/$uuid", params: { uuid: post.created_by.uuid } });
     };
 
     const [commentText, setCommentText] = useState("");
