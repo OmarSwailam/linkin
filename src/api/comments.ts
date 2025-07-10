@@ -35,3 +35,15 @@ export async function getCommentReplies(commentUuid: string, params?: { page: nu
     });
     return response.data;
 }
+
+export async function likeReply(replyUuid: string) {
+    const endpoint = `/comments/${replyUuid}/like`;
+    const response = await api.post(endpoint);
+    return response.data;
+}
+
+export async function unlikeReply(replyUuid: string) {
+    const endpoint = `/comments/${replyUuid}/like`;
+    const response = await api.delete(endpoint);
+    return response.data;
+}

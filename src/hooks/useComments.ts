@@ -4,7 +4,7 @@ import {
     useQueryClient,
     type UseInfiniteQueryResult,
 } from "@tanstack/react-query";
-import { createCommentOnPost, getCommentReplies, getPostComments, likeComment, unlikeComment } from "../api/comments";
+import { createCommentOnPost, getCommentReplies, getPostComments, likeComment, likeReply, unlikeComment, unlikeReply } from "../api/comments";
 import type { CommentReplyType, CommentType, CreateCommentPayload, CreateCommentResponse, PaginatedResponse } from "../types";
 import toast from "react-hot-toast";
 import { updateCommentCountInAllPosts } from "../utils/helpers";
@@ -152,6 +152,74 @@ export function useCommentReplies(commentUuid: string, pageSize = 5, enabled = t
         getNextPageParam: (lastPage) => {
             const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
             return hasMore ? lastPage.page + 1 : undefined;
+        },
+    });
+}
+
+export function useLikeReply(commentUuid: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: likeReply,
+        onSuccess: (data, replyUuid) => {
+            queryClient.setQueriesData(["comment-replies", commentUuid], (oldData: any) => {
+                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: any) => ({
+                        ...page,
+                        results: Array.isArray(page.results)
+                            ? page.results.map((reply: any) =>
+                                reply.uuid === replyUuid
+                                    ? {
+                                        ...reply,
+                                        liked: true,
+                                        likes_count: reply.likes_count + 1,
+                                    }
+                                    : reply
+                            )
+                            : [],
+                    })),
+                };
+            });
+        },
+        onError: (err: any) => {
+            toast.error(err.response?.data?.error || "Failed to like reply.");
+        },
+    });
+}
+
+export function useUnlikeReply(commentUuid: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: unlikeReply,
+        onSuccess: (data, replyUuid) => {
+            queryClient.setQueriesData(["comment-replies", commentUuid], (oldData: any) => {
+                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: any) => ({
+                        ...page,
+                        results: Array.isArray(page.results)
+                            ? page.results.map((reply: any) =>
+                                reply.uuid === replyUuid
+                                    ? {
+                                        ...reply,
+                                        liked: false,
+                                        likes_count: Math.max(reply.likes_count - 1, 0),
+                                    }
+                                    : reply
+                            )
+                            : [],
+                    })),
+                };
+            });
+        },
+        onError: (err: any) => {
+            toast.error(err.response?.data?.error || "Failed to unlike reply.");
         },
     });
 }
