@@ -9,7 +9,7 @@ import { AxiosError } from "axios";
 import { useMyPosts, usePosts } from "../../hooks/usePosts";
 import Post from "../../components/Post";
 import PostSkeleton from "../../components/Post/PostsSkeleton";
-import type { PaginatedResponse, Post as PostType } from "../../types";
+import type { PaginatedResponse, PostType as PostType } from "../../types";
 import CreatePostForm from "../../components/CreatePostForm";
 
 

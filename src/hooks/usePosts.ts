@@ -1,100 +1,34 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { createPost, fetchUserPosts, likePost, unlikePost } from "../api/posts"
-import type { CreatePostPayload, CreatePostResponse, PaginatedResponse, Post } from "../types";
+import { createPost, fetchFeedPosts, fetchUserPosts, likePost, unlikePost } from "../api/posts"
+import type { CreatePostPayload, CreatePostResponse, PaginatedResponse, PostType } from "../types";
 import toast from "react-hot-toast";
 
-export function useMyPosts() {
-    return useInfiniteQuery({
-        queryKey: ["my-posts"],
-        queryFn: ({ pageParam = 1 }) =>
-            fetchUserPosts(undefined, { page: pageParam, page_size: 10 }),
-        staleTime: 0,
-        getNextPageParam: (lastPage: PaginatedResponse<Post>) => {
-            const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
-            return hasMore ? lastPage.page + 1 : undefined;
-        },
-        refetchOnWindowFocus: true
-    });
-}
-
-export function usePosts(userUuid: string) {
-    const key = ["user", `${userUuid}`, "posts"] 
-    return useInfiniteQuery({
-        queryKey: key,
-        queryFn: ({ pageParam = 1 }) => fetchUserPosts(userUuid, { page: pageParam, page_size: 10 }),
-        staleTime: 0,
-        getNextPageParam: (lastPage: PaginatedResponse<Post>) => {
-            const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
-            return hasMore ? lastPage.page + 1 : undefined;
-        },
-        refetchOnWindowFocus: true
-    })
-}
-
-export function useLikePost() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: likePost,
-        onSuccess: (data, postUuid) => {
-            queryClient.setQueriesData(["my-posts"], (oldData: any) => {
-                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
-
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page: any) => ({
-                        ...page,
-                        results: Array.isArray(page.results)
-                            ? page.results.map((post: any) =>
-                                post.uuid === postUuid
-                                    ? {
-                                        ...post,
-                                        liked: true,
-                                        likes_count: post.likes_count + 1,
-                                    }
-                                    : post
-                            )
-                            : [],
-                    })),
-                };
-            });
-        },
-        onError: (err) => {
-            toast.error(err.response?.data?.error || "Failed to like post.");
+export function useUserPosts(userUuid?: string, pageSize = 10) {
+    return useInfiniteQuery<PaginatedResponse<PostType>>({
+        queryKey: ["user-posts", userUuid ?? "me"],
+        initialPageParam: 1,
+        queryFn: ({ pageParam = 1 }: { pageParam: unknown }) =>
+            fetchUserPosts(userUuid, { page: pageParam as number | undefined, page_size: pageSize }),
+        getNextPageParam: (lastPage) => {
+            const { page, page_size, total } = lastPage;
+            return page * page_size < total ? page + 1 : undefined;
         },
     });
 }
 
-export function useUnlikePost() {
-    const queryClient = useQueryClient();
+export function useMyPosts(pageSize = 10) {
+    return useUserPosts(undefined, pageSize);
+}
 
-    return useMutation({
-        mutationFn: unlikePost,
-        onSuccess: (data, postUuid) => {
-            queryClient.setQueriesData(["my-posts"], (oldData: any) => {
-                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
-
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page: any) => ({
-                        ...page,
-                        results: Array.isArray(page.results)
-                            ? page.results.map((post: any) =>
-                                post.uuid === postUuid
-                                    ? {
-                                        ...post,
-                                        liked: false,
-                                        likes_count: Math.max(post.likes_count - 1, 0),
-                                    }
-                                    : post
-                            )
-                            : [],
-                    })),
-                };
-            });
-        },
-        onError: (err) => {
-            toast.error(err.response?.data?.error || "Failed to unlike post.");
+export function useFeedPosts(pageSize = 10) {
+    return useInfiniteQuery<PaginatedResponse<PostType>>({
+        queryKey: ["feed-posts"],
+        initialPageParam: 1,
+        queryFn: ({ pageParam = 1 }: { pageParam: unknown }) =>
+            fetchFeedPosts({ page: pageParam as number | undefined, page_size: pageSize }),
+        getNextPageParam: (lastPage) => {
+            const { page, page_size, total } = lastPage;
+            return page * page_size < total ? page + 1 : undefined;
         },
     });
 }
@@ -104,27 +38,108 @@ export function useCreatePost() {
 
     return useMutation<CreatePostResponse, Error, CreatePostPayload>({
         mutationFn: createPost,
-        onSuccess: (data) => {
-            queryClient.setQueryData(["my-posts"], (oldData: any) => {
+        onSuccess: (newPost, variables) => {
+            toast.success("Post created");
+
+            queryClient.setQueryData(["user-posts", "me"], (oldData: any) => {
                 if (!oldData || !Array.isArray(oldData.pages)) return oldData;
 
-                return {
-                    ...oldData,
-                    pages: [
-                        {
-                            ...oldData.pages[0],
-                            results: [data, ...oldData.pages[0].results],
-                        },
-                        ...oldData.pages.slice(1),
-                    ],
+                const updatedPages = [...oldData.pages];
+                updatedPages[0] = {
+                    ...updatedPages[0],
+                    results: [newPost, ...updatedPages[0].results],
+                    total: updatedPages[0].total + 1,
                 };
+
+                return { ...oldData, pages: updatedPages };
             });
 
-            toast.success("Post created");
+            queryClient.setQueryData(["feed-posts"], (oldData: any) => {
+                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+
+                const updatedPages = [...oldData.pages];
+                updatedPages[0] = {
+                    ...updatedPages[0],
+                    results: [newPost, ...updatedPages[0].results],
+                    total: updatedPages[0].total + 1,
+                };
+
+                return { ...oldData, pages: updatedPages };
+            });
         },
         onError: (error) => {
             const message = (error as any)?.response?.data?.error || "Failed to create post";
             toast.error(message);
+        },
+    });
+}
+
+export function useLikePost() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: likePost,
+        onSuccess: (result, postUuid) => {
+            const keys = [["feed-posts"], ["user-posts", "me"]];
+
+            keys.forEach((key) => {
+                queryClient.setQueriesData<PaginatedResponse<PostType>>({ queryKey: key }, (oldData: PaginatedResponse<PostType> | undefined) => {
+                    if (!oldData?.results) return oldData;
+
+                    const updatedResults = oldData.results.map((post: PostType) =>
+                        post.uuid === postUuid
+                            ? {
+                                ...post,
+                                liked: true,
+                                likes_count: post.likes_count + 1,
+                            }
+                            : post
+                    );
+
+                    return { ...oldData, results: updatedResults };
+                });
+            });
+        },
+        onError: (err) => {
+            const errorMessage = (err as any)?.response?.data?.error || "Failed to like post.";
+            toast.error(errorMessage);
+        },
+    });
+}
+
+export function useUnlikePost() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: unlikePost,
+        onSuccess: (result, postUuid) => {
+            const keys = [["feed-posts"], ["user-posts", "me"]];
+
+            keys.forEach((key) => {
+                queryClient.setQueriesData<PaginatedResponse<PostType>>(
+                    { queryKey: key },
+                    (oldData: PaginatedResponse<PostType> | undefined) => {
+                        if (!oldData?.results) return oldData;
+
+                        const updatedResults = oldData.results.map((post: PostType) =>
+                            post.uuid === postUuid
+                                ? {
+                                    ...post,
+                                    liked: false,
+                                    likes_count: Math.max(post.likes_count - 1, 0),
+                                }
+                                : post
+                        );
+
+                        return { ...oldData, results: updatedResults };
+                    }
+                );
+            });
+        },
+        onError: (err) => {
+            const errorMessage =
+                (err as any)?.response?.data?.error || "Failed to unlike post.";
+            toast.error(errorMessage);
         },
     });
 }

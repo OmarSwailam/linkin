@@ -1,4 +1,4 @@
-import type { Post as PostType } from "../../types";
+import type { PostType as PostType } from "../../types";
 import { Heart } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 import toast from "react-hot-toast";

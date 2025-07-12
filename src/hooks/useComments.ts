@@ -105,50 +105,10 @@ export function useUnlikeComment(postUuid: string) {
 }
 
 export function useCreateCommentOnPost(postUuid: string) {
-    const queryClient = useQueryClient();
 
     return useMutation<CreateCommentResponse, Error, CreateCommentPayload>({
         mutationFn: createCommentOnPost,
         onSuccess: (newComment, variables) => {
-            toast.success("Comment created");
-
-            queryClient.setQueriesData(
-                ["post-comments", postUuid],
-                (oldData: any) => {
-                    if (!oldData?.pages || !Array.isArray(oldData.pages)) return oldData;
-
-                    const updatedPages = [...oldData.pages];
-                    if (updatedPages[0]) {
-                        updatedPages[0] = {
-                            ...updatedPages[0],
-                            results: [newComment, ...updatedPages[0].results],
-                            total: updatedPages[0].total + 1
-                        };
-                    }
-
-                    return {
-                        ...oldData,
-                        pages: updatedPages,
-                    };
-                }
-            );
-
-            const commentedPostUuid = variables.post_uuid;
-            const postRelatedKeys = ["my-posts", "posts", "following-posts", "suggested-posts"];
-
-            queryClient.invalidateQueries({
-                predicate: (query) => {
-                    const key = query.queryKey[0];
-                    if (!postRelatedKeys.includes(key)) return false;
-
-                    const data: any = queryClient.getQueryData(query.queryKey);
-                    if (!data?.pages) return false;
-
-                    return data.pages.some((page: any) =>
-                        page.results.some((post: any) => post.uuid === commentedPostUuid)
-                    );
-                }
-            });
 
         },
         onError: (error) => {
@@ -157,125 +117,125 @@ export function useCreateCommentOnPost(postUuid: string) {
     });
 }
 
-export function useCommentReplies(commentUuid: string, pageSize = 5, enabled = true) {
-    return useInfiniteQuery<PaginatedResponse<CommentReplyType>>({
-        queryKey: ["comment-replies", commentUuid],
-        queryFn: ({ pageParam = 1 }) =>
-            getCommentReplies(commentUuid, { page: pageParam, page_size: pageSize }),
-        initialPageParam: 1,
-        enabled: !!commentUuid && enabled,
-        getNextPageParam: (lastPage) => {
-            const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
-            return hasMore ? lastPage.page + 1 : undefined;
-        },
-    });
-}
+// export function useCommentReplies(commentUuid: string, pageSize = 5, enabled = true) {
+//     return useInfiniteQuery<PaginatedResponse<CommentReplyType>>({
+//         queryKey: ["comment-replies", commentUuid],
+//         queryFn: ({ pageParam = 1 }) =>
+//             getCommentReplies(commentUuid, { page: pageParam, page_size: pageSize }),
+//         initialPageParam: 1,
+//         enabled: !!commentUuid && enabled,
+//         getNextPageParam: (lastPage) => {
+//             const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
+//             return hasMore ? lastPage.page + 1 : undefined;
+//         },
+//     });
+// }
 
-export function useLikeReply(commentUuid: string) {
-    const queryClient = useQueryClient();
+// export function useLikeReply(commentUuid: string) {
+//     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: likeReply,
-        onSuccess: (data, replyUuid) => {
-            queryClient.setQueriesData(["comment-replies", commentUuid], (oldData: any) => {
-                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+//     return useMutation({
+//         mutationFn: likeReply,
+//         onSuccess: (data, replyUuid) => {
+//             queryClient.setQueriesData(["comment-replies", commentUuid], (oldData: any) => {
+//                 if (!oldData || !Array.isArray(oldData.pages)) return oldData;
 
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page: any) => ({
-                        ...page,
-                        results: Array.isArray(page.results)
-                            ? page.results.map((reply: any) =>
-                                reply.uuid === replyUuid
-                                    ? {
-                                        ...reply,
-                                        liked: true,
-                                        likes_count: reply.likes_count + 1,
-                                    }
-                                    : reply
-                            )
-                            : [],
-                    })),
-                };
-            });
-        },
-        onError: (err: any) => {
-            toast.error(err.response?.data?.error || "Failed to like reply.");
-        },
-    });
-}
+//                 return {
+//                     ...oldData,
+//                     pages: oldData.pages.map((page: any) => ({
+//                         ...page,
+//                         results: Array.isArray(page.results)
+//                             ? page.results.map((reply: any) =>
+//                                 reply.uuid === replyUuid
+//                                     ? {
+//                                         ...reply,
+//                                         liked: true,
+//                                         likes_count: reply.likes_count + 1,
+//                                     }
+//                                     : reply
+//                             )
+//                             : [],
+//                     })),
+//                 };
+//             });
+//         },
+//         onError: (err: any) => {
+//             toast.error(err.response?.data?.error || "Failed to like reply.");
+//         },
+//     });
+// }
 
-export function useUnlikeReply(commentUuid: string) {
-    const queryClient = useQueryClient();
+// export function useUnlikeReply(commentUuid: string) {
+//     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: unlikeReply,
-        onSuccess: (data, replyUuid) => {
-            queryClient.setQueriesData(["comment-replies", commentUuid], (oldData: any) => {
-                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+//     return useMutation({
+//         mutationFn: unlikeReply,
+//         onSuccess: (data, replyUuid) => {
+//             queryClient.setQueriesData(["comment-replies", commentUuid], (oldData: any) => {
+//                 if (!oldData || !Array.isArray(oldData.pages)) return oldData;
 
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page: any) => ({
-                        ...page,
-                        results: Array.isArray(page.results)
-                            ? page.results.map((reply: any) =>
-                                reply.uuid === replyUuid
-                                    ? {
-                                        ...reply,
-                                        liked: false,
-                                        likes_count: Math.max(reply.likes_count - 1, 0),
-                                    }
-                                    : reply
-                            )
-                            : [],
-                    })),
-                };
-            });
-        },
-        onError: (err: any) => {
-            toast.error(err.response?.data?.error || "Failed to unlike reply.");
-        },
-    });
-}
+//                 return {
+//                     ...oldData,
+//                     pages: oldData.pages.map((page: any) => ({
+//                         ...page,
+//                         results: Array.isArray(page.results)
+//                             ? page.results.map((reply: any) =>
+//                                 reply.uuid === replyUuid
+//                                     ? {
+//                                         ...reply,
+//                                         liked: false,
+//                                         likes_count: Math.max(reply.likes_count - 1, 0),
+//                                     }
+//                                     : reply
+//                             )
+//                             : [],
+//                     })),
+//                 };
+//             });
+//         },
+//         onError: (err: any) => {
+//             toast.error(err.response?.data?.error || "Failed to unlike reply.");
+//         },
+//     });
+// }
 
-export function useCreateReplyOnComment(commentUuid: string, postUuid: string) {
-    const queryClient = useQueryClient();
+// export function useCreateReplyOnComment(commentUuid: string, postUuid: string) {
+//     const queryClient = useQueryClient();
 
-    return useMutation<CommentReplyType, Error, CreateReplayPayload>({
-        mutationFn: createReplayOnComment,
-        onSuccess: (newReply, variables) => {
-            toast.success("Reply added");
+//     return useMutation<CommentReplyType, Error, CreateReplayPayload>({
+//         mutationFn: createReplayOnComment,
+//         onSuccess: (newReply, variables) => {
+//             toast.success("Reply added");
 
-            queryClient.setQueriesData(
-                ["comment-replies", commentUuid],
-                (
-                    oldData: InfiniteData<PaginatedResponse<CommentReplyType>> | undefined
-                ) => {
-                    if (!oldData?.pages || !Array.isArray(oldData.pages)) return oldData;
+//             queryClient.setQueriesData(
+//                 ["comment-replies", commentUuid],
+//                 (
+//                     oldData: InfiniteData<PaginatedResponse<CommentReplyType>> | undefined
+//                 ) => {
+//                     if (!oldData?.pages || !Array.isArray(oldData.pages)) return oldData;
 
-                    const firstPage = oldData.pages[0];
-                    const rest = oldData.pages.slice(1);
+//                     const firstPage = oldData.pages[0];
+//                     const rest = oldData.pages.slice(1);
 
-                    return {
-                        ...oldData,
-                        pages: [
-                            {
-                                ...firstPage,
-                                results: [newReply, ...firstPage.results],
-                                total: firstPage.total + 1,
-                            },
-                            ...rest,
-                        ],
-                        pageParams: oldData.pageParams ?? [1],
-                    };
-                }
-            );
+//                     return {
+//                         ...oldData,
+//                         pages: [
+//                             {
+//                                 ...firstPage,
+//                                 results: [newReply, ...firstPage.results],
+//                                 total: firstPage.total + 1,
+//                             },
+//                             ...rest,
+//                         ],
+//                         pageParams: oldData.pageParams ?? [1],
+//                     };
+//                 }
+//             );
 
-            queryClient.invalidateQueries(["post-comments", postUuid]);
-        },
-        onError: (error) => {
-            toast.error(error.message || "Failed to add reply.");
-        },
-    });
-}
+//             queryClient.invalidateQueries(["post-comments", postUuid]);
+//         },
+//         onError: (error) => {
+//             toast.error(error.message || "Failed to add reply.");
+//         },
+//     });
+// }

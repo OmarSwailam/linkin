@@ -29,29 +29,29 @@ export async function createCommentOnPost(
     return response.data;
 }
 
-export async function createReplayOnComment(
-    payload: CreateReplayPayload
-): Promise<CreateReplayResponse> {
-    const response = await api.post<CreateReplayResponse>("/comments/", payload);
-    return response.data;
-}
+// export async function createReplayOnComment(
+//     payload: CreateReplayPayload
+// ): Promise<CreateReplayResponse> {
+//     const response = await api.post<CreateReplayResponse>("/comments/", payload);
+//     return response.data;
+// }
 
 
-export async function getCommentReplies(commentUuid: string, params?: { page: number; page_size: number }) {
-    const response = await api.get<PaginatedResponse<CommentReplyType>>(`/comments/${commentUuid}/replies`, {
-        params,
-    });
-    return response.data;
-}
+// export async function getCommentReplies(commentUuid: string, params?: { page: number; page_size: number }) {
+//     const response = await api.get<PaginatedResponse<CommentReplyType>>(`/comments/${commentUuid}/replies`, {
+//         params,
+//     });
+//     return response.data;
+// }
 
-export async function likeReply(replyUuid: string) {
-    const endpoint = `/comments/${replyUuid}/like`;
-    const response = await api.post(endpoint);
-    return response.data;
-}
+// export async function likeReply(replyUuid: string) {
+//     const endpoint = `/comments/${replyUuid}/like`;
+//     const response = await api.post(endpoint);
+//     return response.data;
+// }
 
-export async function unlikeReply(replyUuid: string) {
-    const endpoint = `/comments/${replyUuid}/like`;
-    const response = await api.delete(endpoint);
-    return response.data;
-}
+// export async function unlikeReply(replyUuid: string) {
+//     const endpoint = `/comments/${replyUuid}/like`;
+//     const response = await api.delete(endpoint);
+//     return response.data;
+// }

@@ -25,11 +25,11 @@ export type UpdateUserResponse = {
 export interface PostCreator {
     uuid: string;
     name: string;
-    profile_image?: string | undefined;
-    title?: string | undefined;
+    profile_image?: string | null;
+    title?: string | null;
 }
 
-export interface Post {
+export interface PostType {
     uuid: string;
     text: string;
     images: string[];
@@ -38,15 +38,15 @@ export interface Post {
     comments_count: number;
     likes_count: number;
     liked: boolean;
+    priority?: number;
 }
+
 export interface PaginatedResponse<T> {
     page: number;
     page_size: number;
     total: number;
     results: T[];
 }
-
-export type UserPostsResponse = PaginatedResponse<Post>;
 
 export interface PaginationQueryParams {
     page?: number;
