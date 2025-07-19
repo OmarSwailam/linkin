@@ -1,13 +1,14 @@
 import { Heart, MessageCircle } from "lucide-react";
-import type { CommentType } from "../../types";
+import type { CommentType, PaginatedResponse, ReplyType } from "../../types";
 import "./comment.css";
 import { formatDateTime } from "../../utils/helpers";
 import { useNavigate } from "@tanstack/react-router";
-import { useLikeComment, useUnlikeComment } from "../../hooks/useComments";
+import { useCommentReplies, useLikeComment, useUnlikeComment } from "../../hooks/useComments";
 import { useEffect, useState, type FormEvent } from "react";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import ReplySkeleton from "../Reply/ReplySkeleton";
+import Reply from "../Reply";
 
 interface CommentProps {
     comment: CommentType;
@@ -60,6 +61,23 @@ export default function Comment({ comment, postUuid }: CommentProps) {
         setReplyText("");
     }
 
+    const {
+        data,
+        isLoading,
+        isError,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useCommentReplies(uuid, 5, true)
+
+    useEffect(() => {
+        if (isError && error instanceof AxiosError) {
+            toast.error((error.response?.data as { error?: string })?.error || "Failed to load comments");
+        }
+    }, [isError, error]);
+
+
     return (
         <div className="comment">
             <div className="comment-header">
@@ -109,7 +127,35 @@ export default function Comment({ comment, postUuid }: CommentProps) {
 
             {showReplies && (
                 <div className="comment-replies">
+                    {isLoading ? (
+                        <ReplySkeleton />
+                    ) : (
+                        <>
+                            {data?.pages.map((page: PaginatedResponse<ReplyType>, pageIndex: number) => (
+                                <div key={pageIndex}>
+                                    {page.results.map((reply) => (
+                                        <Reply
+                                            key={reply.uuid}
+                                            reply={reply}
+                                            commentUuid={comment.uuid}
+                                        />
+                                    ))}
 
+                                </div>
+
+                            ))}
+                            {isFetchingNextPage && <ReplySkeleton />}
+                        </>
+                    )}
+
+                    {hasNextPage && !isFetchingNextPage && (
+                        <button
+                            className="view-more-replies"
+                            onClick={() => fetchNextPage()}
+                        >
+                            View more replies
+                        </button>
+                    )}
 
                 </div>
             )}

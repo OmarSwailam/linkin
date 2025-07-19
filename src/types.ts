@@ -101,27 +101,18 @@ export interface CreateCommentPayload {
 
 export type CreateCommentResponse = CommentType;
 
-export interface CreateCommentErrorResponse {
-    error: string;
+export interface ReplyAuthor {
+    uuid: string
+    name: string
+    profile_image?: string
+    title?: string
 }
 
-export interface CommentReplyType {
-    uuid: string;
-    text: string;
-    created_at: string;
-    likes_count: number;
-    liked: boolean;
-    created_by: {
-        uuid: string;
-        name: string;
-        profile_image: string;
-        title?: string;
-    };
+export interface ReplyType {
+    uuid: string
+    text: string
+    created_at: string
+    likes_count: number
+    liked: boolean
+    created_by: ReplyAuthor
 }
-
-export interface CreateReplayPayload {
-    text: string;
-    comment_uuid: string;
-}
-
-export type CreateReplayResponse = CommentReplyType;

@@ -1,4 +1,7 @@
-import type { PaginatedResponse, PaginationQueryParams, CommentType, CreateCommentPayload, CreateCommentResponse, CommentReplyType, CreateReplayPayload, CreateReplayResponse } from "../types"
+import type {
+    PaginatedResponse, PaginationQueryParams, CommentType, CreateCommentPayload, CreateCommentResponse,
+    ReplyType
+} from "../types"
 import api from "./axios"
 
 
@@ -29,20 +32,15 @@ export async function createCommentOnPost(
     return response.data;
 }
 
-// export async function createReplayOnComment(
-//     payload: CreateReplayPayload
-// ): Promise<CreateReplayResponse> {
-//     const response = await api.post<CreateReplayResponse>("/comments/", payload);
-//     return response.data;
-// }
-
-
-// export async function getCommentReplies(commentUuid: string, params?: { page: number; page_size: number }) {
-//     const response = await api.get<PaginatedResponse<CommentReplyType>>(`/comments/${commentUuid}/replies`, {
-//         params,
-//     });
-//     return response.data;
-// }
+export async function getCommentReplies(
+    commentUuid: string,
+    queryParams?: PaginationQueryParams
+): Promise<PaginatedResponse<ReplyType>> {
+    const res = await api.get(`/comments/${commentUuid}/replies`, {
+        params: queryParams,
+    })
+    return res.data
+}
 
 // export async function likeReply(replyUuid: string) {
 //     const endpoint = `/comments/${replyUuid}/like`;

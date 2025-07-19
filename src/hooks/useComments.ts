@@ -6,7 +6,7 @@ import {
     type UseInfiniteQueryResult,
 } from "@tanstack/react-query";
 import { createCommentOnPost, createReplayOnComment, getCommentReplies, getPostComments, likeComment, likeReply, unlikeComment, unlikeReply } from "../api/comments";
-import type { CommentReplyType, CommentType, CreateCommentPayload, CreateCommentResponse, CreateReplayPayload, PaginatedResponse } from "../types";
+import type { CommentReplyType, CommentType, CreateCommentPayload, CreateCommentResponse, CreateReplayPayload, PaginatedResponse, ReplyType } from "../types";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 
@@ -132,19 +132,24 @@ export function useUnlikeComment(postUuid: string) {
 }
 
 
-// export function useCommentReplies(commentUuid: string, pageSize = 5, enabled = true) {
-//     return useInfiniteQuery<PaginatedResponse<CommentReplyType>>({
-//         queryKey: ["comment-replies", commentUuid],
-//         queryFn: ({ pageParam = 1 }) =>
-//             getCommentReplies(commentUuid, { page: pageParam, page_size: pageSize }),
-//         initialPageParam: 1,
-//         enabled: !!commentUuid && enabled,
-//         getNextPageParam: (lastPage) => {
-//             const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
-//             return hasMore ? lastPage.page + 1 : undefined;
-//         },
-//     });
-// }
+export function useCommentReplies(
+    commentUuid?: string,
+    pageSize: number = 5,
+    enabled: boolean = true
+) {
+    return useInfiniteQuery<PaginatedResponse<ReplyType>>({
+        queryKey: ["comment-replies", commentUuid],
+        initialPageParam: 1,
+        queryFn: ({ pageParam = 1 }: { pageParam: unknown }) =>
+            getCommentReplies(commentUuid!, { page: pageParam as number | undefined, page_size: pageSize }),
+        getNextPageParam: (lastPage) => {
+            const hasMore =
+                lastPage.page * lastPage.page_size < lastPage.total;
+            return hasMore ? lastPage.page + 1 : undefined;
+        },
+        enabled: !!commentUuid && enabled,
+    })
+}
 
 // export function useLikeReply(commentUuid: string) {
 //     const queryClient = useQueryClient();
