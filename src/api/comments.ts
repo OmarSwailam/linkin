@@ -49,14 +49,14 @@ export async function createReply(payload: CreateReplyPayload): Promise<CreateRe
     return res.data
 }
 
-// export async function likeReply(replyUuid: string) {
-//     const endpoint = `/comments/${replyUuid}/like`;
-//     const response = await api.post(endpoint);
-//     return response.data;
-// }
+export async function likeReply(replyUuid: string) {
+    const endpoint = `/comments/${replyUuid}/like`;
+    const response = await api.post(endpoint);
+    return response.data;
+}
 
-// export async function unlikeReply(replyUuid: string) {
-//     const endpoint = `/comments/${replyUuid}/like`;
-//     const response = await api.delete(endpoint);
-//     return response.data;
-// }
+export async function unlikeReply(replyUuid: string) {
+    const endpoint = `/comments/${replyUuid}/like`;
+    const response = await api.delete(endpoint);
+    return response.data;
+}

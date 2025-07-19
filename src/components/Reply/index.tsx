@@ -3,6 +3,7 @@ import { formatDateTime } from "../../utils/helpers";
 import { useNavigate } from "@tanstack/react-router";
 import "./reply.css"
 import type { ReplyType } from "../../types";
+import { useLikeReply, useUnlikeReply } from "../../hooks/useComments";
 
 interface ReplyProps {
     reply: ReplyType;
@@ -25,15 +26,15 @@ export default function Reply({ reply, commentUuid }: ReplyProps) {
         navigate({ to: "/profile/$uuid", params: { uuid: created_by.uuid } });
     };
 
-    // const likeReply = useLikeReply(commentUuid);
-    // const unlikeReply = useUnlikeReply(commentUuid);
+    const likeReply = useLikeReply(commentUuid);
+    const unlikeReply = useUnlikeReply(commentUuid);
 
     const handleLike = () => {
-        // if (reply.liked) {
-        //     unlikeReply.mutate(uuid);
-        // } else {
-        //     likeReply.mutate(uuid);
-        // }
+        if (reply.liked) {
+            unlikeReply.mutate(uuid);
+        } else {
+            likeReply.mutate(uuid);
+        }
     };
 
     return (
