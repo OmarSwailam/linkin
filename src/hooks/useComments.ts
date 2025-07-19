@@ -64,71 +64,71 @@ export function useCreateCommentOnPost(postUuid: string) {
 }
 
 export function useLikeComment(postUuid: string) {
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: likeComment,
-        onSuccess: (data, commentUuid) => {
-            queryClient.setQueriesData(["post-comments", postUuid], (oldData: any) => {
-                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+        onSuccess: (_, commentUuid) => {
+            queryClient.setQueriesData<InfiniteData<PaginatedResponse<CommentType>>>(
+                { queryKey: ["post-comments", postUuid] },
+                (oldData) => {
+                    if (!oldData) return oldData
 
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page: any) => ({
+                    const updatedPages = oldData.pages.map((page) => ({
                         ...page,
-                        results: Array.isArray(page.results)
-                            ? page.results.map((comment: any) =>
-                                comment.uuid === commentUuid
-                                    ? {
-                                        ...comment,
-                                        liked: true,
-                                        likes_count: comment.likes_count + 1,
-                                    }
-                                    : comment
-                            )
-                            : [],
-                    })),
-                };
-            });
+                        results: page.results.map((comment) =>
+                            comment.uuid === commentUuid
+                                ? {
+                                    ...comment,
+                                    liked: true,
+                                    likes_count: comment.likes_count + 1,
+                                }
+                                : comment
+                        ),
+                    }))
+
+                    return { ...oldData, pages: updatedPages }
+                }
+            )
         },
         onError: (err) => {
-            toast.error(err.response?.data?.error || "Failed to like comment.");
+            toast.error((err as any)?.response?.data?.error || "Failed to like comment.")
         },
-    });
+    })
 }
 
 export function useUnlikeComment(postUuid: string) {
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: unlikeComment,
-        onSuccess: (data, commentUuid) => {
-            queryClient.setQueriesData(["post-comments", postUuid], (oldData: any) => {
-                if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+        onSuccess: (_, commentUuid) => {
+            queryClient.setQueriesData<InfiniteData<PaginatedResponse<CommentType>>>(
+                { queryKey: ["post-comments", postUuid] },
+                (oldData) => {
+                    if (!oldData) return oldData
 
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page: any) => ({
+                    const updatedPages = oldData.pages.map((page) => ({
                         ...page,
-                        results: Array.isArray(page.results)
-                            ? page.results.map((comment: CommentType) =>
-                                comment.uuid === commentUuid
-                                    ? {
-                                        ...comment,
-                                        liked: false,
-                                        likes_count: Math.max(comment.likes_count - 1, 0),
-                                    }
-                                    : comment
-                            )
-                            : [],
-                    })),
-                };
-            });
+                        results: page.results.map((comment) =>
+                            comment.uuid === commentUuid
+                                ? {
+                                    ...comment,
+                                    liked: false,
+                                    likes_count: Math.max(comment.likes_count - 1, 0),
+                                }
+                                : comment
+                        ),
+                    }))
+
+                    return { ...oldData, pages: updatedPages }
+                }
+            )
         },
         onError: (err) => {
-            toast.error(err.response?.data?.error || "Failed to unlike comment.");
+            toast.error((err as any)?.response?.data?.error || "Failed to unlike comment.")
         },
-    });
+    })
 }
 
 

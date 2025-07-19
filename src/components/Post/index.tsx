@@ -126,7 +126,6 @@ export default function Post({ post }: { post: PostType }) {
             </div>
             {showComments && (
                 <div className="post-comments">
-                    <h4 className="comments-heading">Comments</h4>
 
                     {isLoading ? (
                         <CommentSkeleton />
