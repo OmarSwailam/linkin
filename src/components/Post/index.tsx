@@ -72,7 +72,7 @@ export default function Post({ post }: { post: PostType }) {
         <div className="post">
             <div className="post-info">
                 <div className="created-by">
-                    <img src={post.created_by.profile_image} alt={`${post.created_by.name}'s profile image`}
+                    <img src={post.created_by.profile_image || ""} alt={`${post.created_by.name}'s profile image`}
                         onClick={handleUserClick}
                     />
                     <div className="created-by-info">

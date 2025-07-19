@@ -83,21 +83,28 @@ export function useLikePost() {
             const keys = [["feed-posts"], ["user-posts", "me"]];
 
             keys.forEach((key) => {
-                queryClient.setQueriesData<PaginatedResponse<PostType>>({ queryKey: key }, (oldData: PaginatedResponse<PostType> | undefined) => {
-                    if (!oldData?.results) return oldData;
+                queryClient.setQueriesData(
+                    { queryKey: key },
+                    (oldData: any) => {
+                        if (!oldData || !Array.isArray(oldData.pages)) return oldData;
 
-                    const updatedResults = oldData.results.map((post: PostType) =>
-                        post.uuid === postUuid
-                            ? {
-                                ...post,
-                                liked: true,
-                                likes_count: post.likes_count + 1,
-                            }
-                            : post
-                    );
-
-                    return { ...oldData, results: updatedResults };
-                });
+                        return {
+                            ...oldData,
+                            pages: oldData.pages.map((page: any) => ({
+                                ...page,
+                                results: page.results.map((post: PostType) =>
+                                    post.uuid === postUuid
+                                        ? {
+                                            ...post,
+                                            liked: true,
+                                            likes_count: post.likes_count + 1,
+                                        }
+                                        : post
+                                ),
+                            })),
+                        };
+                    }
+                );
             });
         },
         onError: (err) => {
@@ -116,29 +123,32 @@ export function useUnlikePost() {
             const keys = [["feed-posts"], ["user-posts", "me"]];
 
             keys.forEach((key) => {
-                queryClient.setQueriesData<PaginatedResponse<PostType>>(
+                queryClient.setQueriesData(
                     { queryKey: key },
-                    (oldData: PaginatedResponse<PostType> | undefined) => {
-                        if (!oldData?.results) return oldData;
+                    (oldData: any) => {
+                        if (!oldData || !Array.isArray(oldData.pages)) return oldData;
 
-                        const updatedResults = oldData.results.map((post: PostType) =>
-                            post.uuid === postUuid
-                                ? {
-                                    ...post,
-                                    liked: false,
-                                    likes_count: Math.max(post.likes_count - 1, 0),
-                                }
-                                : post
-                        );
-
-                        return { ...oldData, results: updatedResults };
+                        return {
+                            ...oldData,
+                            pages: oldData.pages.map((page: any) => ({
+                                ...page,
+                                results: page.results.map((post: PostType) =>
+                                    post.uuid === postUuid
+                                        ? {
+                                            ...post,
+                                            liked: false,
+                                            likes_count: Math.max(post.likes_count - 1, 0),
+                                        }
+                                        : post
+                                ),
+                            })),
+                        };
                     }
                 );
             });
         },
         onError: (err) => {
-            const errorMessage =
-                (err as any)?.response?.data?.error || "Failed to unlike post.";
+            const errorMessage = (err as any)?.response?.data?.error || "Failed to unlike post.";
             toast.error(errorMessage);
         },
     });

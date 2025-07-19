@@ -6,7 +6,7 @@ import ProfileInfoSkeleton from "../../components/ProfileInfo/ProfileInfoSkeleto
 import toast from "react-hot-toast";
 import { useEffect } from "react";
 import { AxiosError } from "axios";
-import { useMyPosts, usePosts } from "../../hooks/usePosts";
+import { useMyPosts, useUserPosts } from "../../hooks/usePosts";
 import Post from "../../components/Post";
 import PostSkeleton from "../../components/Post/PostsSkeleton";
 import type { PaginatedResponse, PostType as PostType } from "../../types";
@@ -32,7 +32,7 @@ export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: b
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-    } = userUuid ? usePosts(userUuid) : useMyPosts();
+    } = userUuid ? useUserPosts(userUuid) : useMyPosts();
 
     useEffect(() => {
         if (profileInfoIsError && profileInfoError instanceof AxiosError) {
