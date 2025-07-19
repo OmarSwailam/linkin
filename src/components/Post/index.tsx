@@ -1,4 +1,4 @@
-import type { PostType as PostType } from "../../types";
+import type { CommentType, PaginatedResponse, PostType as PostType } from "../../types";
 import { Heart } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 import toast from "react-hot-toast";
@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import "./post.css"
 import { useLikePost, useUnlikePost } from "../../hooks/usePosts";
 import { formatDateTime } from "../../utils/helpers";
-import { useComments, useCreateCommentOnPost } from "../../hooks/useComments";
+import { usePostComments, useCreateCommentOnPost } from "../../hooks/useComments";
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import CommentSkeleton from "../Comment/CommentSkeleton";
@@ -32,17 +32,17 @@ export default function Post({ post }: { post: PostType }) {
 
     const {
         data,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
         isLoading,
         isError,
         error,
-    } = useComments(post.uuid, 5, showComments);
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = usePostComments(post.uuid, 5, showComments);
 
     useEffect(() => {
         if (isError && error instanceof AxiosError) {
-            toast.error(error.response?.data?.error || "Failed to load comments");
+            toast.error((error.response?.data as { error?: string })?.error || "Failed to load comments");
         }
     }, [isError, error]);
 
@@ -129,14 +129,22 @@ export default function Post({ post }: { post: PostType }) {
                     <h4 className="comments-heading">Comments</h4>
 
                     {isLoading ? (
-                        Array.from({ length: 3 }).map((_, i) => <CommentSkeleton key={i} />)
+                        <CommentSkeleton />
                     ) : (
                         <>
-                            {data?.pages.map((page, pageIndex) =>
-                                page.results.map((comment) => (
-                                    <Comment key={comment.uuid} comment={comment} postUuid={post.uuid} />
-                                ))
-                            )}
+                            {data?.pages.map((page: PaginatedResponse<CommentType>, pageIndex: number) => (
+                                <div key={pageIndex}>
+                                    {page.results.map((comment) => (
+                                        <Comment
+                                            key={comment.uuid}
+                                            comment={comment}
+                                            postUuid={post.uuid}
+                                        />
+                                    ))}
+
+                                </div>
+
+                            ))}
                             {isFetchingNextPage && <CommentSkeleton />}
                         </>
                     )}

@@ -8,31 +8,27 @@ import {
 import { createCommentOnPost, createReplayOnComment, getCommentReplies, getPostComments, likeComment, likeReply, unlikeComment, unlikeReply } from "../api/comments";
 import type { CommentReplyType, CommentType, CreateCommentPayload, CreateCommentResponse, CreateReplayPayload, PaginatedResponse } from "../types";
 import toast from "react-hot-toast";
+import type { AxiosError } from "axios";
 
 // typescript is shit
 
-export function useComments(
+export function usePostComments(
     postUuid?: string,
     pageSize = 10,
     enabled = true
-): UseInfiniteQueryResult<PaginatedResponse<CommentType>, Error> {
-    return useInfiniteQuery<
-        PaginatedResponse<CommentType>,
-        Error,
-        PaginatedResponse<CommentType>,
-        [string, string?],
-        number
-    >({
+) {
+    return useInfiniteQuery<PaginatedResponse<CommentType>>({
         queryKey: ["post-comments", postUuid],
-        queryFn: ({ pageParam = 1 }) =>
-            getPostComments(postUuid, { page: pageParam, page_size: pageSize }),
         initialPageParam: 1,
-        enabled: !!postUuid && enabled,
+        queryFn: ({ pageParam = 1 }: { pageParam: unknown }) =>
+            getPostComments(postUuid, { page: pageParam as number | undefined, page_size: pageSize }),
         getNextPageParam: (lastPage) => {
             const hasMore =
                 lastPage.page * lastPage.page_size < lastPage.total;
             return hasMore ? lastPage.page + 1 : undefined;
         },
+        enabled: !!postUuid && enabled,
+
     });
 }
 
