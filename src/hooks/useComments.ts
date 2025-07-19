@@ -32,6 +32,37 @@ export function usePostComments(
     });
 }
 
+
+export function useCreateCommentOnPost(postUuid: string) {
+    const queryClient = useQueryClient()
+
+    return useMutation<CreateCommentResponse, Error, CreateCommentPayload>({
+        mutationFn: createCommentOnPost,
+        onSuccess: (newComment) => {
+            toast.success("Comment posted")
+
+            queryClient.setQueriesData<InfiniteData<PaginatedResponse<CommentType>>>(
+                { queryKey: ["post-comments", postUuid] },
+                (oldData) => {
+                    if (!oldData?.pages?.[0]) return oldData
+
+                    const updatedPages = [...oldData.pages]
+                    updatedPages[0] = {
+                        ...updatedPages[0],
+                        results: [newComment, ...updatedPages[0].results],
+                        total: updatedPages[0].total + 1,
+                    }
+
+                    return { ...oldData, pages: updatedPages }
+                }
+            )
+        },
+        onError: (err) => {
+            toast.error(err.message || "Failed to post comment")
+        },
+    })
+}
+
 export function useLikeComment(postUuid: string) {
     const queryClient = useQueryClient();
 
@@ -100,18 +131,6 @@ export function useUnlikeComment(postUuid: string) {
     });
 }
 
-export function useCreateCommentOnPost(postUuid: string) {
-
-    return useMutation<CreateCommentResponse, Error, CreateCommentPayload>({
-        mutationFn: createCommentOnPost,
-        onSuccess: (newComment, variables) => {
-
-        },
-        onError: (error) => {
-            toast.error(error.message || "Failed to create comment.");
-        },
-    });
-}
 
 // export function useCommentReplies(commentUuid: string, pageSize = 5, enabled = true) {
 //     return useInfiniteQuery<PaginatedResponse<CommentReplyType>>({
