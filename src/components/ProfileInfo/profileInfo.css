@@ -59,6 +59,17 @@
     background-color: #e7e7e7;
     background-color: var(--chip-bg);
     padding: 0.4em 0.5em;
+    position: relative;
+    padding-right: 1.5rem;
+}
+
+.remove-skill {
+    position: absolute;
+    right: 4px;
+    top: 2px;
+    cursor: pointer;
+    color: red;
+    font-weight: bold;
 }
 
 .skeleton {

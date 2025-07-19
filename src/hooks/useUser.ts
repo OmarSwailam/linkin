@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { User, UpdateUserResponse, UpdateUserPayload } from "../types";
-import { fetchUser, updateUser } from "../api/users";
+import { addSkill, fetchUser, removeSkill, updateUser } from "../api/users";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import { isAuthenticated } from "../utils/auth";
@@ -23,8 +23,43 @@ export function useUpdateUser() {
             queryClient.setQueryData(["user", "me"], data.user);
             toast.success(data.message);
         },
-        onError: (err) => {
-            toast.error(err.response?.data?.error || "Failed to update user.");
+        onError: (error) => {
+            const err = error as AxiosError<{ error: string }>;
+            return toast.error(err.response?.data?.error || "Failed to update user.");
+        },
+    })
+}
+
+export function useAddSkill() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: addSkill,
+        onSuccess: (_, payload) => {
+            queryClient.setQueryData<User>(["user", "me"], (old) =>
+                old ? { ...old, skills: [payload.name, ...old.skills] } : old
+            )
+        },
+        onError: (error) => {
+            const err = error as AxiosError<{ error: string }>;
+            return toast.error(err.response?.data?.error || "Failed to add skill.");
+        },
+    })
+}
+
+export function useRemoveSkill() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: removeSkill,
+        onSuccess: (_, payload) => {
+            queryClient.setQueryData<User>(["user", "me"], (old) =>
+                old ? { ...old, skills: old.skills.filter((s) => s !== payload.name) } : old
+            )
+        },
+        onError: (error) => {
+            const err = error as AxiosError<{ error: string }>;
+            return toast.error(err.response?.data?.error || "Failed to remove skill.");
         },
     })
 }

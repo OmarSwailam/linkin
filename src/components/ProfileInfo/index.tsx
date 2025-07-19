@@ -2,11 +2,15 @@ import type { User } from "../../types";
 import { useState } from "react";
 import ProfileEditModal from "../ProfileEditModal";
 import "./profileInfo.css"
+import { useAddSkill, useRemoveSkill } from "../../hooks/useUser";
 
 export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwnProfile: boolean }) {
     const profileImage = user?.profile_image || "/profile-placeholder.png";
 
     const [showForm, setShowForm] = useState(false)
+    const addSkill = useAddSkill()
+    const removeSkill = useRemoveSkill()
+    const [newSkill, setNewSkill] = useState("")
 
     return (
         <div className="profile-info">
@@ -22,8 +26,38 @@ export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwn
             </div>
             <p className="skills-label">skills</p>
 
+            {isOwnProfile && (
+                <div className="skill-controls">
+                    <input
+                        placeholder="Add skill"
+                        value={newSkill}
+                        onChange={(e) => setNewSkill(e.target.value)}
+                    />
+                    <button
+                        onClick={() => {
+                            if (newSkill.trim()) {
+                                addSkill.mutate({ name: newSkill.trim() })
+                                setNewSkill("")
+                            }
+                        }}
+                    >
+                        Add
+                    </button>
+                </div>
+            )}
+
             <div className="skills">
-                {user?.skills.map(skill => <div key={skill} className="skill">{skill}</div>)}
+                {user?.skills.map(skill => <div key={skill} className="skill">
+                    {skill}
+                    {isOwnProfile && (
+                        <span
+                            className="remove-skill"
+                            onClick={() => removeSkill.mutate({ name: skill })}
+                        >
+                            ✕
+                        </span>
+                    )}
+                </div>)}
             </div>
         </div>
     )

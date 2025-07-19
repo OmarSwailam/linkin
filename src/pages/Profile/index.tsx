@@ -82,6 +82,7 @@ export default function ProfilePage({ isOwnProfile = false }: { isOwnProfile?: b
                                 ))}
                             </div>
                         ))}
+                        {isFetchingNextPage && <PostSkeleton />}
                     </>
                 )}
             </div>

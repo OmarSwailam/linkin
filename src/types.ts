@@ -135,3 +135,7 @@ export interface CreateReplyResponse {
         title?: string
     }
 }
+
+export interface SkillPayload {
+    name: string
+}
