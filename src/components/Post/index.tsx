@@ -17,8 +17,8 @@ import { useNavigate } from "@tanstack/react-router";
 export default function Post({ post }: { post: PostType }) {
     const navigate = useNavigate();
 
-    const likePost = useLikePost()
-    const unlikePost = useUnlikePost()
+    const likePost = useLikePost(post.created_by.uuid)
+    const unlikePost = useUnlikePost(post.created_by.uuid)
 
     const [showComments, setShowComments] = useState(false);
 

@@ -74,13 +74,16 @@ export function useCreatePost() {
     });
 }
 
-export function useLikePost() {
+export function useLikePost(userUuid?: string) {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: likePost,
         onSuccess: (result, postUuid) => {
             const keys = [["feed-posts"], ["user-posts", "me"]];
+            if (userUuid && userUuid !== "me") {
+                keys.push(["user-posts", userUuid]);
+            }
 
             keys.forEach((key) => {
                 queryClient.setQueriesData(
@@ -114,13 +117,16 @@ export function useLikePost() {
     });
 }
 
-export function useUnlikePost() {
+export function useUnlikePost(userUuid?: string) {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: unlikePost,
         onSuccess: (result, postUuid) => {
             const keys = [["feed-posts"], ["user-posts", "me"]];
+            if (userUuid && userUuid !== "me") {
+                keys.push(["user-posts", userUuid]);
+            }
 
             keys.forEach((key) => {
                 queryClient.setQueriesData(
