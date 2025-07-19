@@ -3,12 +3,10 @@ import {
     useMutation,
     useQueryClient,
     type InfiniteData,
-    type UseInfiniteQueryResult,
 } from "@tanstack/react-query";
-import { createCommentOnPost, createReplayOnComment, getCommentReplies, getPostComments, likeComment, likeReply, unlikeComment, unlikeReply } from "../api/comments";
-import type { CommentReplyType, CommentType, CreateCommentPayload, CreateCommentResponse, CreateReplayPayload, PaginatedResponse, ReplyType } from "../types";
+import { createCommentOnPost, createReply, getCommentReplies, getPostComments, likeComment, likeReply, unlikeComment, unlikeReply } from "../api/comments";
+import type { CommentType, CreateCommentPayload, CreateCommentResponse, CreateReplyPayload, CreateReplyResponse, PaginatedResponse, ReplyType } from "../types";
 import toast from "react-hot-toast";
-import type { AxiosError } from "axios";
 
 // typescript is shit
 
@@ -151,6 +149,38 @@ export function useCommentReplies(
     })
 }
 
+
+export function useCreateReply(commentUuid: string) {
+    const queryClient = useQueryClient()
+
+    return useMutation<CreateReplyResponse, Error, CreateReplyPayload>({
+        mutationFn: createReply,
+        onSuccess: (newReply) => {
+            toast.success("Reply added")
+
+            queryClient.setQueriesData<InfiniteData<PaginatedResponse<ReplyType>>>(
+                { queryKey: ["comment-replies", commentUuid] },
+                (oldData) => {
+                    if (!oldData?.pages?.[0]) return oldData
+
+                    const updatedPages = [...oldData.pages]
+                    updatedPages[0] = {
+                        ...updatedPages[0],
+                        results: [newReply, ...updatedPages[0].results],
+                        total: updatedPages[0].total + 1,
+                    }
+
+                    return { ...oldData, pages: updatedPages }
+                }
+            )
+        },
+        onError: (err) => {
+            toast.error(err.message || "Failed to add reply")
+        },
+    })
+}
+
+
 // export function useLikeReply(commentUuid: string) {
 //     const queryClient = useQueryClient();
 
@@ -215,47 +245,6 @@ export function useCommentReplies(
 //         },
 //         onError: (err: any) => {
 //             toast.error(err.response?.data?.error || "Failed to unlike reply.");
-//         },
-//     });
-// }
-
-// export function useCreateReplyOnComment(commentUuid: string, postUuid: string) {
-//     const queryClient = useQueryClient();
-
-//     return useMutation<CommentReplyType, Error, CreateReplayPayload>({
-//         mutationFn: createReplayOnComment,
-//         onSuccess: (newReply, variables) => {
-//             toast.success("Reply added");
-
-//             queryClient.setQueriesData(
-//                 ["comment-replies", commentUuid],
-//                 (
-//                     oldData: InfiniteData<PaginatedResponse<CommentReplyType>> | undefined
-//                 ) => {
-//                     if (!oldData?.pages || !Array.isArray(oldData.pages)) return oldData;
-
-//                     const firstPage = oldData.pages[0];
-//                     const rest = oldData.pages.slice(1);
-
-//                     return {
-//                         ...oldData,
-//                         pages: [
-//                             {
-//                                 ...firstPage,
-//                                 results: [newReply, ...firstPage.results],
-//                                 total: firstPage.total + 1,
-//                             },
-//                             ...rest,
-//                         ],
-//                         pageParams: oldData.pageParams ?? [1],
-//                     };
-//                 }
-//             );
-
-//             queryClient.invalidateQueries(["post-comments", postUuid]);
-//         },
-//         onError: (error) => {
-//             toast.error(error.message || "Failed to add reply.");
 //         },
 //     });
 // }

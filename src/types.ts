@@ -116,3 +116,22 @@ export interface ReplyType {
     liked: boolean
     created_by: ReplyAuthor
 }
+
+export interface CreateReplyPayload {
+    text: string
+    comment_uuid: string
+}
+
+export interface CreateReplyResponse {
+    uuid: string
+    text: string
+    created_at: string
+    likes_count: number
+    liked: boolean
+    created_by: {
+        uuid: string
+        name: string
+        profile_image?: string
+        title?: string
+    }
+}

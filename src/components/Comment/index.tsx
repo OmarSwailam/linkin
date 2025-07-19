@@ -3,7 +3,7 @@ import type { CommentType, PaginatedResponse, ReplyType } from "../../types";
 import "./comment.css";
 import { formatDateTime } from "../../utils/helpers";
 import { useNavigate } from "@tanstack/react-router";
-import { useCommentReplies, useLikeComment, useUnlikeComment } from "../../hooks/useComments";
+import { useCommentReplies, useCreateReply, useLikeComment, useUnlikeComment } from "../../hooks/useComments";
 import { useEffect, useState, type FormEvent } from "react";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
@@ -48,6 +48,7 @@ export default function Comment({ comment, postUuid }: CommentProps) {
 
     const [replyText, setReplyText] = useState("");
 
+    const createReply = useCreateReply(uuid)
 
     function handleAddReply(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -57,7 +58,7 @@ export default function Comment({ comment, postUuid }: CommentProps) {
             toast.error("Reply cannot be empty");
             return;
         }
-
+        createReply.mutate({ text, comment_uuid: uuid })
         setReplyText("");
     }
 

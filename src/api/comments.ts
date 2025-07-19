@@ -1,6 +1,8 @@
 import type {
     PaginatedResponse, PaginationQueryParams, CommentType, CreateCommentPayload, CreateCommentResponse,
-    ReplyType
+    ReplyType,
+    CreateReplyPayload,
+    CreateReplyResponse
 } from "../types"
 import api from "./axios"
 
@@ -39,6 +41,11 @@ export async function getCommentReplies(
     const res = await api.get(`/comments/${commentUuid}/replies`, {
         params: queryParams,
     })
+    return res.data
+}
+
+export async function createReply(payload: CreateReplyPayload): Promise<CreateReplyResponse> {
+    const res = await api.post("/comments/", payload)
     return res.data
 }
 
