@@ -1,4 +1,4 @@
-import type { FollowResponse, SkillPayload, UpdateUserPayload, UpdateUserResponse, User } from "../types";
+import type { FollowResponse, PaginatedResponse, PaginationQueryParams, SkillPayload, UpdateUserPayload, UpdateUserResponse, User } from "../types";
 import api from "./axios"
 
 export async function fetchUser({ uuid }: { uuid?: string }) {
@@ -31,4 +31,17 @@ export async function followUser(userUuid: string): Promise<FollowResponse> {
 export async function unfollowUser(userUuid: string): Promise<FollowResponse> {
     const res = await api.delete(`/users/${userUuid}/follow`);
     return res.data;
+}
+
+export async function fetchFollowList(
+    userUuid: string | undefined,
+    type: 'followers' | 'following',
+    params?: PaginationQueryParams
+): Promise<PaginatedResponse<User>> {
+    const endpoint = userUuid
+        ? `/users/${userUuid}/${type}`
+        : `/users/me/${type}`;
+
+    const response = await api.get(endpoint, { params });
+    return response.data;
 }

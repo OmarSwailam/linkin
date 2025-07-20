@@ -38,7 +38,7 @@ export function useCreatePost() {
 
     return useMutation<CreatePostResponse, Error, CreatePostPayload>({
         mutationFn: createPost,
-        onSuccess: (newPost, variables) => {
+        onSuccess: (newPost, _) => {
             toast.success("Post created");
 
             queryClient.setQueryData(["user-posts", "me"], (oldData: any) => {
@@ -79,7 +79,7 @@ export function useLikePost(userUuid?: string) {
 
     return useMutation({
         mutationFn: likePost,
-        onSuccess: (result, postUuid) => {
+        onSuccess: (_, postUuid) => {
             const keys = [["feed-posts"], ["user-posts", "me"]];
             if (userUuid && userUuid !== "me") {
                 keys.push(["user-posts", userUuid]);
@@ -122,7 +122,7 @@ export function useUnlikePost(userUuid?: string) {
 
     return useMutation({
         mutationFn: unlikePost,
-        onSuccess: (result, postUuid) => {
+        onSuccess: (_, postUuid) => {
             const keys = [["feed-posts"], ["user-posts", "me"]];
             if (userUuid && userUuid !== "me") {
                 keys.push(["user-posts", userUuid]);

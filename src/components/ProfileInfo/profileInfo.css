@@ -32,6 +32,13 @@
 .following,
 .followers {
     font-size: 1.5rem;
+    transition: all 0.3s;
+}
+
+.following:hover,
+.followers:hover {
+    cursor: pointer;
+    color: var(--accent);
 }
 
 .following span,

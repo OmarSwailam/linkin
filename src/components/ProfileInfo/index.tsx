@@ -3,6 +3,8 @@ import { useState } from "react";
 import ProfileEditModal from "../ProfileEditModal";
 import "./profileInfo.css"
 import { useAddSkill, useFollowUser, useRemoveSkill, useUnfollowUser } from "../../hooks/useUser";
+import Modal from "../Modal";
+import FollowList from "../FollowList";
 
 export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwnProfile: boolean }) {
     const profileImage = user?.profile_image || "/profile-placeholder.png";
@@ -26,6 +28,10 @@ export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwn
 
     const isFollowPending = followUser.isPending || unfollowUser.isPending;
 
+    const [showFollowers, setShowFollowers] = useState(false);
+    const [showFollowing, setShowFollowing] = useState(false);
+
+
     return (
         <div className="profile-info">
             {isOwnProfile && <p onClick={() => setShowForm(true)} className="edit-profile-btn">Edit</p>}
@@ -35,9 +41,31 @@ export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwn
             <h2 className="profile-name">{user?.first_name} {user?.last_name}</h2>
             <h3 className="title">{user?.title}</h3>
             <div className="numbers">
-                <p className="followers"><span>{user?.followers_count}</span> Followers</p>
-                <p className="following"><span>{user?.following_count}</span> Following</p>
+                <p
+                    className="followers"
+                    onClick={() => setShowFollowers(true)}
+                >
+                    <span>{user?.followers_count}</span> Followers
+                </p>
+                <p
+                    className="following"
+                    onClick={() => setShowFollowing(true)}
+                >
+                    <span>{user?.following_count}</span> Following
+                </p>
             </div>
+
+            {showFollowers && (
+                <Modal onClose={() => setShowFollowers(false)} title="Followers">
+                    <FollowList type="followers" userUuid={user?.uuid} />
+                </Modal>
+            )}
+
+            {showFollowing && (
+                <Modal onClose={() => setShowFollowing(false)} title="Following">
+                    <FollowList type="following" userUuid={user?.uuid} />
+                </Modal>
+            )}
 
             {!isOwnProfile && user && (
                 <button

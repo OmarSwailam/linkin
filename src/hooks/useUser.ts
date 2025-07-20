@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { User, UpdateUserResponse, UpdateUserPayload } from "../types";
-import { addSkill, fetchUser, followUser, removeSkill, unfollowUser, updateUser } from "../api/users";
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import type { InfiniteData } from "@tanstack/react-query";
+import type { User, UpdateUserResponse, UpdateUserPayload, PaginatedResponse } from "../types";
+import { addSkill, fetchFollowList, fetchUser, followUser, removeSkill, unfollowUser, updateUser } from "../api/users";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import { isAuthenticated } from "../utils/auth";
@@ -71,14 +72,41 @@ export function useFollowUser(userUuid: string) {
         mutationFn: () => followUser(userUuid),
         onSuccess: (data) => {
             toast.success(data.message);
+
+            // Update target user data
             queryClient.setQueryData<User>(["user", userUuid], (old) =>
-                old
-                    ? {
+                old ? {
+                    ...old,
+                    is_following: true,
+                    followers_count: old.followers_count + 1,
+                } : old
+            );
+
+            // Update current user's following count
+            queryClient.setQueryData<User>(["user", "me"], (old) =>
+                old ? {
+                    ...old,
+                    following_count: old.following_count + 1,
+                } : old
+            );
+
+            // Update follow lists
+            queryClient.setQueriesData<InfiniteData<PaginatedResponse<User>>>(
+                { queryKey: ['follow-list'] },
+                (old: InfiniteData<PaginatedResponse<User>> | undefined) => {
+                    if (!old) return old;
+                    return {
                         ...old,
-                        is_following: true,
-                        followers_count: old.followers_count + 1,
-                    }
-                    : old
+                        pages: old.pages.map((page: PaginatedResponse<User>) => ({
+                            ...page,
+                            results: page.results.map((user: User) =>
+                                user.uuid === userUuid
+                                    ? { ...user, is_following: true, followers_count: user.followers_count + 1 }
+                                    : user
+                            )
+                        }))
+                    };
+                }
             );
         },
         onError: (err: any) => {
@@ -94,18 +122,56 @@ export function useUnfollowUser(userUuid: string) {
         mutationFn: () => unfollowUser(userUuid),
         onSuccess: (data) => {
             toast.success(data.message);
+
             queryClient.setQueryData<User>(["user", userUuid], (old) =>
-                old
-                    ? {
+                old ? {
+                    ...old,
+                    is_following: false,
+                    followers_count: Math.max(0, old.followers_count - 1),
+                } : old
+            );
+
+            queryClient.setQueryData<User>(["user", "me"], (old) =>
+                old ? {
+                    ...old,
+                    following_count: Math.max(0, old.following_count - 1),
+                } : old
+            );
+
+            queryClient.setQueriesData<InfiniteData<PaginatedResponse<User>>>(
+                { queryKey: ['follow-list'] },
+                (old: InfiniteData<PaginatedResponse<User>> | undefined) => {
+                    if (!old) return old;
+                    return {
                         ...old,
-                        is_following: false,
-                        followers_count: Math.max(0, old.followers_count - 1),
-                    }
-                    : old
+                        pages: old.pages.map((page: PaginatedResponse<User>) => ({
+                            ...page,
+                            results: page.results.map((user: User) =>
+                                user.uuid === userUuid
+                                    ? { ...user, is_following: false, followers_count: Math.max(0, user.followers_count - 1) }
+                                    : user
+                            )
+                        }))
+                    };
+                }
             );
         },
         onError: (err: any) => {
             toast.error(err?.response?.data?.error || "Failed to unfollow user");
         },
+    });
+}
+
+export function useFollowList(type: 'followers' | 'following', userUuid?: string) {
+    return useInfiniteQuery<PaginatedResponse<User>, AxiosError>({
+        queryKey: ['follow-list', type, userUuid || 'me'],
+        queryFn: ({ pageParam = 1 }) =>
+            fetchFollowList(userUuid, type, { page: pageParam as number | undefined, page_size: 10 }),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+            const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
+            return hasMore ? lastPage.page + 1 : undefined;
+        },
+        enabled: type === 'followers' || type === 'following'
     });
 }
