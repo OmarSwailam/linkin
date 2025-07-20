@@ -2,7 +2,7 @@ import type { User } from "../../types";
 import { useState } from "react";
 import ProfileEditModal from "../ProfileEditModal";
 import "./profileInfo.css"
-import { useAddSkill, useRemoveSkill } from "../../hooks/useUser";
+import { useAddSkill, useFollowUser, useRemoveSkill, useUnfollowUser } from "../../hooks/useUser";
 
 export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwnProfile: boolean }) {
     const profileImage = user?.profile_image || "/profile-placeholder.png";
@@ -11,6 +11,20 @@ export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwn
     const addSkill = useAddSkill()
     const removeSkill = useRemoveSkill()
     const [newSkill, setNewSkill] = useState("")
+
+    const followUser = useFollowUser(user?.uuid || "");
+    const unfollowUser = useUnfollowUser(user?.uuid || "");
+
+    const handleFollowToggle = () => {
+        if (!user) return;
+        if (user.is_following) {
+            unfollowUser.mutate();
+        } else {
+            followUser.mutate();
+        }
+    };
+
+    const isFollowPending = followUser.isPending || unfollowUser.isPending;
 
     return (
         <div className="profile-info">
@@ -24,6 +38,18 @@ export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwn
                 <p className="followers"><span>{user?.followers_count}</span> Followers</p>
                 <p className="following"><span>{user?.following_count}</span> Following</p>
             </div>
+
+            {!isOwnProfile && user && (
+                <button
+                    onClick={handleFollowToggle}
+                    disabled={isFollowPending}
+                    className={`follow-btn ${user.is_following ? "unfollow" : "follow"}`}
+                >
+                    {user.is_following ? "Unfollow" : "Follow"}
+                </button>
+            )}
+
+
             <p className="skills-label">skills</p>
 
             {isOwnProfile && (

@@ -1,4 +1,4 @@
-import type { SkillPayload, UpdateUserPayload, UpdateUserResponse, User } from "../types";
+import type { FollowResponse, SkillPayload, UpdateUserPayload, UpdateUserResponse, User } from "../types";
 import api from "./axios"
 
 export async function fetchUser({ uuid }: { uuid?: string }) {
@@ -21,4 +21,14 @@ export async function addSkill(payload: SkillPayload) {
 export async function removeSkill(payload: SkillPayload) {
     const res = await api.delete("users/me/skill", { data: payload })
     return res.data
+}
+
+export async function followUser(userUuid: string): Promise<FollowResponse> {
+    const res = await api.post(`/users/${userUuid}/follow`);
+    return res.data;
+}
+
+export async function unfollowUser(userUuid: string): Promise<FollowResponse> {
+    const res = await api.delete(`/users/${userUuid}/follow`);
+    return res.data;
 }

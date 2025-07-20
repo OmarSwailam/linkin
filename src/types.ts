@@ -6,6 +6,7 @@ export interface User {
     email: string;
     followers_count: number;
     following_count: number;
+    is_following: boolean;
     profile_image: string;
     skills: string[];
 }
@@ -138,4 +139,8 @@ export interface CreateReplyResponse {
 
 export interface SkillPayload {
     name: string
+}
+
+export interface FollowResponse {
+    message: string;
 }

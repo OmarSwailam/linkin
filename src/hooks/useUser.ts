@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { User, UpdateUserResponse, UpdateUserPayload } from "../types";
-import { addSkill, fetchUser, removeSkill, updateUser } from "../api/users";
+import { addSkill, fetchUser, followUser, removeSkill, unfollowUser, updateUser } from "../api/users";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import { isAuthenticated } from "../utils/auth";
@@ -62,4 +62,50 @@ export function useRemoveSkill() {
             return toast.error(err.response?.data?.error || "Failed to remove skill.");
         },
     })
+}
+
+export function useFollowUser(userUuid: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => followUser(userUuid),
+        onSuccess: (data) => {
+            toast.success(data.message);
+            queryClient.setQueryData<User>(["user", userUuid], (old) =>
+                old
+                    ? {
+                        ...old,
+                        is_following: true,
+                        followers_count: old.followers_count + 1,
+                    }
+                    : old
+            );
+        },
+        onError: (err: any) => {
+            toast.error(err?.response?.data?.error || "Failed to follow user");
+        },
+    });
+}
+
+export function useUnfollowUser(userUuid: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => unfollowUser(userUuid),
+        onSuccess: (data) => {
+            toast.success(data.message);
+            queryClient.setQueryData<User>(["user", userUuid], (old) =>
+                old
+                    ? {
+                        ...old,
+                        is_following: false,
+                        followers_count: Math.max(0, old.followers_count - 1),
+                    }
+                    : old
+            );
+        },
+        onError: (err: any) => {
+            toast.error(err?.response?.data?.error || "Failed to unfollow user");
+        },
+    });
 }
