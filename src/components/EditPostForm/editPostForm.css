@@ -68,3 +68,25 @@
 .edit-post-image-row input {
     flex: 1;
 }
+
+.delete-btn {
+    background-color: #cc2f26;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+}
+
+.confirm-delete-btn {
+    background-color: #cc2f26;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.confirm-delete-btn:hover {
+    background-color: #a82620;
+}

@@ -150,3 +150,7 @@ export interface UpdatePostPayload {
     text?: string
     images?: string[]
 }
+
+export interface DeletePostResponse {
+    message: string
+}

@@ -1,4 +1,4 @@
-import type { CreatePostPayload, CreatePostResponse, PaginatedResponse, PaginationQueryParams, PostType, UpdatePostPayload } from "../types"
+import type { CreatePostPayload, CreatePostResponse, DeletePostResponse, PaginatedResponse, PaginationQueryParams, PostType, UpdatePostPayload } from "../types"
 import api from "./axios"
 
 export async function fetchUserPosts(userUuid?: string, queryParams?: PaginationQueryParams): Promise<PaginatedResponse<PostType>> {
@@ -35,5 +35,10 @@ export async function unlikePost(postUuid: string) {
 
 export async function updatePost(postUuid: string, payload: UpdatePostPayload): Promise<PostType> {
     const response = await api.patch<PostType>(`/posts/${postUuid}`, payload)
+    return response.data
+}
+
+export async function deletePost(postUuid: string): Promise<DeletePostResponse> {
+    const response = await api.delete<DeletePostResponse>(`/posts/${postUuid}`)
     return response.data
 }

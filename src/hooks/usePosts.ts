@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { createPost, fetchFeedPosts, fetchUserPosts, likePost, unlikePost, updatePost } from "../api/posts"
-import type { CreatePostPayload, CreatePostResponse, PaginatedResponse, PostType, UpdatePostPayload } from "../types";
+import { createPost, deletePost, fetchFeedPosts, fetchUserPosts, likePost, unlikePost, updatePost } from "../api/posts"
+import type { CreatePostPayload, CreatePostResponse, DeletePostResponse, PaginatedResponse, PostType, UpdatePostPayload } from "../types";
 import toast from "react-hot-toast";
 
 export function useUserPosts(userUuid?: string, pageSize = 10) {
@@ -198,4 +198,34 @@ export function useUpdatePost(postUuid: string) {
             toast.error(err.message || "Failed to update post");
         },
     });
+}
+
+export function useDeletePost(postUuid: string) {
+    const queryClient = useQueryClient()
+
+    return useMutation<DeletePostResponse, Error, void>({
+        mutationFn: () => deletePost(postUuid),
+        onSuccess: () => {
+            toast.success("Post deleted")
+
+            const keys: any[] = [["feed-posts"], ["user-posts", "me"]]
+
+            keys.forEach((key) => {
+                queryClient.setQueriesData({ queryKey: key }, (oldData: any) => {
+                    if (!oldData?.pages) return oldData
+
+                    return {
+                        ...oldData,
+                        pages: oldData.pages.map((page: any) => ({
+                            ...page,
+                            results: page.results.filter((post: PostType) => post.uuid !== postUuid),
+                        })),
+                    }
+                })
+            })
+        },
+        onError: (err) => {
+            toast.error(err.message || "Failed to delete post")
+        },
+    })
 }
