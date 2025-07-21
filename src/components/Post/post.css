@@ -181,7 +181,28 @@
 }
 
 .post-actions {
-    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.edit-post-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-post-btn:hover {
+    background-color: var(--bg-darker);
+    color: var(--accent);
+    transform: scale(1.1);
 }
 
 .view-comments-btn {

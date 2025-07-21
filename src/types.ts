@@ -145,3 +145,8 @@ export interface SkillPayload {
 export interface FollowResponse {
     message: string;
 }
+
+export interface UpdatePostPayload {
+    text?: string
+    images?: string[]
+}

@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { createPost, fetchFeedPosts, fetchUserPosts, likePost, unlikePost } from "../api/posts"
-import type { CreatePostPayload, CreatePostResponse, PaginatedResponse, PostType } from "../types";
+import { createPost, fetchFeedPosts, fetchUserPosts, likePost, unlikePost, updatePost } from "../api/posts"
+import type { CreatePostPayload, CreatePostResponse, PaginatedResponse, PostType, UpdatePostPayload } from "../types";
 import toast from "react-hot-toast";
 
 export function useUserPosts(userUuid?: string, pageSize = 10) {
@@ -156,6 +156,46 @@ export function useUnlikePost(userUuid?: string) {
         onError: (err) => {
             const errorMessage = (err as any)?.response?.data?.error || "Failed to unlike post.";
             toast.error(errorMessage);
+        },
+    });
+}
+
+export function useUpdatePost(postUuid: string) {
+    const queryClient = useQueryClient()
+
+    return useMutation<PostType, Error, UpdatePostPayload>({
+        mutationFn: (payload) => updatePost(postUuid, payload),
+        onSuccess: (updatedPost) => {
+            toast.success("Post updated")
+
+            const keys: any[] = [["feed-posts"], ["user-posts", "me"]];
+
+            if (updatedPost.created_by?.uuid && updatedPost.created_by.uuid !== "me") {
+                keys.push(["user-posts", updatedPost.created_by.uuid]);
+            }
+
+            keys.forEach((key) => {
+                queryClient.setQueriesData(
+                    { queryKey: key },
+                    (oldData: any) => {
+                        if (!oldData || !Array.isArray(oldData.pages)) return oldData;
+
+                        return {
+                            ...oldData,
+                            pages: oldData.pages.map((page: any) => ({
+                                ...page,
+                                results: page.results.map((post: PostType) =>
+                                    post.uuid === updatedPost.uuid ? updatedPost : post
+                                ),
+                            })),
+                        };
+                    }
+                );
+            });
+
+        },
+        onError: (err) => {
+            toast.error(err.message || "Failed to update post");
         },
     });
 }

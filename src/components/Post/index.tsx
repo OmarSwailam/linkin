@@ -1,10 +1,9 @@
-import type { CommentType, PaginatedResponse, PostType as PostType } from "../../types";
-import { Heart } from "lucide-react";
-import { MessageCircle } from "lucide-react";
+import type { CommentType, PaginatedResponse, PostType } from "../../types";
+import { Heart, MessageCircle, Edit2 } from "lucide-react";
+import { useLikePost, useUnlikePost } from "../../hooks/usePosts";
 import toast from "react-hot-toast";
 
 import "./post.css"
-import { useLikePost, useUnlikePost } from "../../hooks/usePosts";
 import { formatDateTime } from "../../utils/helpers";
 import { usePostComments, useCreateCommentOnPost } from "../../hooks/useComments";
 import { useEffect, useState } from "react";
@@ -12,6 +11,9 @@ import { AxiosError } from "axios";
 import CommentSkeleton from "../Comment/CommentSkeleton";
 import Comment from "../Comment";
 import { useNavigate } from "@tanstack/react-router";
+import { useUser } from "../../hooks/useUser";
+import EditPostForm from "../EditPostForm";
+import Modal from "../Modal";
 
 
 export default function Post({ post }: { post: PostType }) {
@@ -21,6 +23,7 @@ export default function Post({ post }: { post: PostType }) {
     const unlikePost = useUnlikePost(post.created_by.uuid)
 
     const [showComments, setShowComments] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     function handleLike() {
         if (post.liked) {
@@ -66,11 +69,21 @@ export default function Post({ post }: { post: PostType }) {
         setCommentText("");
     }
 
+    const { data: user } = useUser();
 
+    const canEdit = post.created_by.uuid === user?.uuid
 
     return (
         <div className="post">
             <div className="post-info">
+                {
+                    canEdit &&
+                    <div className="post-actions">
+                        <button className="edit-post-btn" onClick={() => setShowEditModal(true)}>
+                            <Edit2 size={18} />
+                        </button>
+                    </div>
+                }
                 <div className="created-by">
                     <img src={post.created_by.profile_image || ""} alt={`${post.created_by.name}'s profile image`}
                         onClick={handleUserClick}
@@ -159,7 +172,14 @@ export default function Post({ post }: { post: PostType }) {
                 </div>
             )}
 
-
+            {showEditModal && (
+                <Modal title="Edit Post" onClose={() => setShowEditModal(false)}>
+                    <EditPostForm
+                        post={post}
+                        onClose={() => setShowEditModal(false)}
+                    />
+                </Modal>
+            )}
         </div>
 
     );
