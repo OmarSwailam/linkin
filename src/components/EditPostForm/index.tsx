@@ -59,7 +59,6 @@ export default function EditPostForm({ post, onClose }: EditPostFormProps) {
             { text, images },
             {
                 onSuccess: () => {
-                    toast.success("Post updated")
                     onClose()
                 },
             }
