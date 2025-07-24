@@ -6,6 +6,7 @@ import SignupPage from "./pages/Signup";
 import LoginPage from "./pages/Login";
 import toast from "react-hot-toast";
 import { isAuthenticated } from "./utils/auth";
+import UsersPage from "./pages/Users";
 
 const rootRoute = createRootRoute({
     component: () => {
@@ -91,8 +92,23 @@ const userProfileRoute = createRoute({
 
 })
 
+const usersRoute = createRoute({
+    path: "/users",
+    component: UsersPage,
+    getParentRoute: () => rootRoute,
+    beforeLoad: () => {
+        if (!isAuthenticated()) {
+            toast.error("You must be logged in to view this page.");
+            throw redirect({
+                to: "/login",
+                search: { redirect: "/users" },
+            });
+        }
+    },
+})
+
 const routeTree = rootRoute.addChildren(
-    [signupRoute, loginRoute, homeRoute, myProfileRoute, userProfileRoute]
+    [signupRoute, loginRoute, homeRoute, myProfileRoute, userProfileRoute, usersRoute]
 )
 
 export const router = createRouter({ routeTree })

@@ -155,3 +155,14 @@ export interface UpdatePostPayload {
 export interface DeletePostResponse {
     message: string
 }
+
+export interface UserSearchParams {
+    page?: number
+    page_size?: number
+    title?: string
+    name?: string
+    skills?: string[]
+    sort_by?: "first_name" | "last_name" | "title" | "created_at"
+    sort_dir?: "asc" | "desc"
+    q?: string
+}

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import type { InfiniteData } from "@tanstack/react-query";
-import type { User, UpdateUserResponse, UpdateUserPayload, PaginatedResponse } from "../types";
-import { addSkill, fetchFollowList, fetchSuggestedFriends, fetchUser, followUser, removeSkill, unfollowUser, updateUser } from "../api/users";
+import type { User, UpdateUserResponse, UpdateUserPayload, PaginatedResponse, UserSearchParams } from "../types";
+import { addSkill, fetchFollowList, fetchSuggestedFriends, fetchUser, fetchUsers, followUser, removeSkill, unfollowUser, updateUser } from "../api/users";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import { isAuthenticated } from "../utils/auth";
@@ -179,4 +179,16 @@ export function useSuggestedFriends(page: number, pageSize = 10) {
         queryFn: () => fetchSuggestedFriends({ page, page_size: pageSize }),
         placeholderData: keepPreviousData,
     })
+}
+
+export function useUsers(searchParams: UserSearchParams = {}) {
+    return useInfiniteQuery<PaginatedResponse<User>, AxiosError>({
+        queryKey: ["users", searchParams],
+        queryFn: ({ pageParam = 1 }) => fetchUsers({ ...searchParams, page: pageParam as number | undefined, page_size: 10 }),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+            const hasMore = lastPage.page * lastPage.page_size < lastPage.total;
+            return hasMore ? lastPage.page + 1 : undefined;
+        },
+    });
 }

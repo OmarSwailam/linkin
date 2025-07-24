@@ -1,4 +1,4 @@
-import type { FollowResponse, PaginatedResponse, PaginationQueryParams, SkillPayload, UpdateUserPayload, UpdateUserResponse, User } from "../types";
+import type { FollowResponse, PaginatedResponse, PaginationQueryParams, SkillPayload, UpdateUserPayload, UpdateUserResponse, User, UserSearchParams } from "../types";
 import { sleep } from "../utils/helpers";
 import api from "./axios"
 
@@ -49,10 +49,29 @@ export async function fetchFollowList(
 
 export async function fetchSuggestedFriends(
     queryParams: PaginationQueryParams
-  ): Promise<PaginatedResponse<User>> {
+): Promise<PaginatedResponse<User>> {
     sleep(5000)
     const response = await api.get<PaginatedResponse<User>>("/users/suggested", {
-      params: queryParams,
+        params: queryParams,
     });
     return response.data;
-  }
+}
+
+export async function fetchUsers(params: UserSearchParams = {}): Promise<PaginatedResponse<User>> {
+    const query = new URLSearchParams()
+
+    if (params.page) query.append("page", String(params.page))
+    if (params.page_size) query.append("page_size", String(params.page_size))
+    if (params.title) query.append("title", params.title)
+    if (params.name) query.append("name", params.name)
+    if (params.skills?.length)
+        query.append("skills", params.skills.join(","))
+    if (params.sort_by) query.append("sort_by", params.sort_by)
+    if (params.sort_dir) query.append("sort_dir", params.sort_dir)
+    if (params.q) query.append("q", params.q)
+
+    const { data } = await api.get<PaginatedResponse<User>>(`/users/?${query.toString()}`)
+
+    console.log(data)
+    return data
+}

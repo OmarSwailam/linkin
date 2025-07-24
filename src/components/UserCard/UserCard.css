@@ -80,6 +80,22 @@
     color: white;
 }
 
+.user-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+}
+
+.skill-chip {
+    font-size: 0.75rem;
+    background-color: var(--chip-bg);
+    color: var(--text-secondary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
 .skeleton-user-card {
     opacity: 0.7;
     animation: pulse 1.6s infinite ease-in-out;

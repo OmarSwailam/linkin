@@ -6,6 +6,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useLogout } from "../../hooks/useAuth";
 import { useUser } from "../../hooks/useUser";
+import NavbarSearch from "../NavSearch";
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -49,6 +50,10 @@ export default function Navbar() {
                 <Link to="/" className="logo-link">
                     <Logo />
                 </Link>
+            </div>
+
+            <div className="nav-center">
+                <NavbarSearch />
             </div>
 
             <div className="nav-right">

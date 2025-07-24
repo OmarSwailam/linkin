@@ -50,13 +50,26 @@ export default function UserCard({
                     <p className="user-name" onClick={handleUserClick}>
                         {user.first_name} {user.last_name}
                     </p>
-                    {user.title && <p className="user-title">
-                        {user.title.length > 45 ? user.title.slice(0, 45) + "…" : user.title}
-                    </p>}
+
+                    {user.title && (
+                        <p className="user-title">
+                            {user.title.length > 45 ? user.title.slice(0, 45) + "…" : user.title}
+                        </p>
+                    )}
+
                     {user.degree !== undefined && (
                         <p className="user-degree">+{user.degree} connection</p>
                     )}
+
+                    {user.skills?.length > 0 && (
+                        <div className="user-skills">
+                            {user.skills.slice(0, 5).map((skill) => (
+                                <span key={skill} className="skill-chip">{skill}</span>
+                            ))}
+                        </div>
+                    )}
                 </div>
+
             </div>
 
             {showFollowButton && (
