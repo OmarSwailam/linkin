@@ -23,6 +23,13 @@
     margin-top: -10px;
 }
 
+.degree {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
 .numbers {
     display: flex;
     gap: 2em;

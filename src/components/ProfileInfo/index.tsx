@@ -40,6 +40,9 @@ export default function ProfileInfo({ user, isOwnProfile }: { user?: User, isOwn
             <img className="profile-image" key={profileImage} src={profileImage} />
             <h2 className="profile-name">{user?.first_name} {user?.last_name}</h2>
             <h3 className="title">{user?.title}</h3>
+            {!isOwnProfile && user?.degree !== undefined && (
+                <p className="degree">+{user.degree} connection</p>
+            )}
             <div className="numbers">
                 <p
                     className="followers"
