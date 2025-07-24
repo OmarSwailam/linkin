@@ -10,9 +10,10 @@ export async function fetchUserPosts(userUuid?: string, queryParams?: Pagination
 }
 
 export async function fetchFeedPosts(queryParams?: PaginationQueryParams): Promise<PaginatedResponse<PostType>> {
-    const response = await api.get<PaginatedResponse<PostType>>("/api/feed", {
+    const response = await api.get<PaginatedResponse<PostType>>("/posts/feed", {
         params: queryParams,
     });
+    console.log(response.data)
     return response.data;
 }
 
