@@ -10,6 +10,7 @@ export interface User {
     follows_me: boolean;
     profile_image: string;
     skills: string[];
+    degree?: number | null;
 }
 
 export type UpdateUserPayload = {

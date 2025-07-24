@@ -41,7 +41,6 @@ api.interceptors.response.use(
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                 return api(originalRequest);
             } catch (err) {
-                console.error("Refresh failed:", err);
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("refresh_token");
                 if (window.location.pathname !== "/login") {

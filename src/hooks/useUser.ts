@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import type { InfiniteData } from "@tanstack/react-query";
 import type { User, UpdateUserResponse, UpdateUserPayload, PaginatedResponse } from "../types";
-import { addSkill, fetchFollowList, fetchUser, followUser, removeSkill, unfollowUser, updateUser } from "../api/users";
+import { addSkill, fetchFollowList, fetchSuggestedFriends, fetchUser, followUser, removeSkill, unfollowUser, updateUser } from "../api/users";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import { isAuthenticated } from "../utils/auth";
@@ -73,7 +73,6 @@ export function useFollowUser(userUuid: string) {
         onSuccess: (data) => {
             toast.success(data.message);
 
-            // Update target user data
             queryClient.setQueryData<User>(["user", userUuid], (old) =>
                 old ? {
                     ...old,
@@ -82,7 +81,6 @@ export function useFollowUser(userUuid: string) {
                 } : old
             );
 
-            // Update current user's following count
             queryClient.setQueryData<User>(["user", "me"], (old) =>
                 old ? {
                     ...old,
@@ -90,7 +88,6 @@ export function useFollowUser(userUuid: string) {
                 } : old
             );
 
-            // Update follow lists
             queryClient.setQueriesData<InfiniteData<PaginatedResponse<User>>>(
                 { queryKey: ['follow-list'] },
                 (old: InfiniteData<PaginatedResponse<User>> | undefined) => {
@@ -174,4 +171,12 @@ export function useFollowList(type: 'followers' | 'following', userUuid?: string
         },
         enabled: type === 'followers' || type === 'following'
     });
+}
+
+export function useSuggestedFriends(page: number, pageSize = 10) {
+    return useQuery<PaginatedResponse<User>>({
+        queryKey: ["suggested-friends", page],
+        queryFn: () => fetchSuggestedFriends({ page, page_size: pageSize }),
+        placeholderData: keepPreviousData,
+    })
 }

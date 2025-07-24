@@ -13,7 +13,6 @@ export async function fetchFeedPosts(queryParams?: PaginationQueryParams): Promi
     const response = await api.get<PaginatedResponse<PostType>>("/posts/feed", {
         params: queryParams,
     });
-    console.log(response.data)
     return response.data;
 }
 

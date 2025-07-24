@@ -1,4 +1,5 @@
 import type { FollowResponse, PaginatedResponse, PaginationQueryParams, SkillPayload, UpdateUserPayload, UpdateUserResponse, User } from "../types";
+import { sleep } from "../utils/helpers";
 import api from "./axios"
 
 export async function fetchUser({ uuid }: { uuid?: string }) {
@@ -45,3 +46,13 @@ export async function fetchFollowList(
     const response = await api.get(endpoint, { params });
     return response.data;
 }
+
+export async function fetchSuggestedFriends(
+    queryParams: PaginationQueryParams
+  ): Promise<PaginatedResponse<User>> {
+    sleep(5000)
+    const response = await api.get<PaginatedResponse<User>>("/users/suggested", {
+      params: queryParams,
+    });
+    return response.data;
+  }

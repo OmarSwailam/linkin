@@ -7,6 +7,7 @@ import PostSkeleton from "../../components/Post/PostsSkeleton";
 import type { PaginatedResponse, PostType } from "../../types";
 import Post from "../../components/Post";
 import "./home.css"
+import SuggestedUsersList from "../../components/SuggestedUsersList";
 
 
 export default function HomePage() {
@@ -44,22 +45,26 @@ export default function HomePage() {
 
 
     return <>
+
         <div className="home-page">
-            <CreatePostForm />
-            {isLoading ? (
-                <PostSkeleton />
-            ) : (
-                <>
-                    {data?.pages.map((page: PaginatedResponse<PostType>, pageIndex: number) => (
-                        <div key={pageIndex}>
-                            {page.results.map((post) => (
-                                <Post key={post.uuid} post={post} />
-                            ))}
-                        </div>
-                    ))}
-                    {isFetchingNextPage && <PostSkeleton />}
-                </>
-            )}
+            <div className="home-feed">
+                <CreatePostForm />
+                {isLoading ? (
+                    <PostSkeleton />
+                ) : (
+                    <>
+                        {data?.pages.map((page: PaginatedResponse<PostType>, pageIndex: number) => (
+                            <div key={pageIndex}>
+                                {page.results.map((post) => (
+                                    <Post key={post.uuid} post={post} />
+                                ))}
+                            </div>
+                        ))}
+                        {isFetchingNextPage && <PostSkeleton />}
+                    </>
+                )}
+            </div>
+            <SuggestedUsersList />
         </div>
     </>
 }
