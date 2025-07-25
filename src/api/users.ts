@@ -72,6 +72,5 @@ export async function fetchUsers(params: UserSearchParams = {}): Promise<Paginat
 
     const { data } = await api.get<PaginatedResponse<User>>(`/users/?${query.toString()}`)
 
-    console.log(data)
     return data
 }

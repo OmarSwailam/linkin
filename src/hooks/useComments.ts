@@ -8,8 +8,6 @@ import { createCommentOnPost, createReply, getCommentReplies, getPostComments, l
 import type { CommentType, CreateCommentPayload, CreateCommentResponse, CreateReplyPayload, CreateReplyResponse, PaginatedResponse, ReplyType } from "../types";
 import toast from "react-hot-toast";
 
-// typescript is shit
-
 export function usePostComments(
     postUuid?: string,
     pageSize = 10,

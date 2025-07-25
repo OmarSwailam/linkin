@@ -44,10 +44,6 @@ export default function FollowList({ type, userUuid }: FollowListProps) {
     if (error) return <div className="follow-list-error">Failed to load {type}</div>;
 
     const FollowButton = ({ user }: { user: User }) => {
-        // Don't show follow button if:
-        // 1. It's the current user
-        // 2. In following list (we already follow them)
-        // 3. In followers list and they follow us back
         if (user.uuid === currentUser?.uuid ||
             type === 'following' ||
             (type === 'followers' && user.follows_me)) {
