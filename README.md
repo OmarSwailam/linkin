@@ -1,54 +1,84 @@
-# React + TypeScript + Vite
+# LINKIN
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
 
-Currently, two official plugins are available:
+![ui](./linkin-frontend.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A fully functional LinkedIn-style social media frontend built with React, TypeScript, TanStack Query, and TanStack Router. This app connects to a Flask + Neo4j backend and supports real-world features like following users, posting updates, and viewing connection degrees.
 
-## Expanding the ESLint configuration
+[Backend repo](https://github.com/OmarSwailam/social-media-neo4j-flask)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- User authentication (login/signup)
+- Follow/unfollow users  
+- See your feed and post updates  
+- Comment, reply, and like posts  
+- Search users by name, job title, or acquired skills  
+- View connection degrees like +1, +2, +3 (just like LinkedIn)  
+- Light and Dark theme
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Installation
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+### Using Docker
+
+Make sure you have Docker installed on your machine.
+
+1. Clone this repository to your local machine:
+  ```bash
+  git clone https://github.com/OmarSwailam/linkin.git
+  ```
+
+2. Navigate to the project directory
+  ```bash
+  cd linkin
+  ```
+
+3. Build and run the container:
+  ```bash
+  docker build -t linkin-frontend .
+  docker run -p 3000:80 linkin-frontend
+  ```
+
+4. Open your browser and go to: http://localhost:3000
+
+**Make sure the backend is running at http://localhost:5000**
+
+### Normal installation
+
+
+1. Clone this repository to your local machine:
+  ```bash
+  git clone https://github.com/OmarSwailam/linkin.git
+  ```
+
+2. Navigate to the project directory
+  ```bash
+  cd linkin
+  ```
+
+3. Install dependencies using pnpm:
+  ```bash
+  pnpm install
+  ```
+4. Start the development server:
+  ```bash
+  pnpm run dev
+  ```
+
+4. Open your browser and go to: http://localhost:5173
+
+**Make sure the backend is running at http://localhost:5000**
+
+
+## Contributing
+
+Contributions are welcome! You can contribute to the project by:
+
+- Reporting issues or suggesting improvements.
+- Forking the repository and submitting pull requests.
+
+
+Author: Omar Swailam
