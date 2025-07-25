@@ -1,3 +1,5 @@
+import type { QueryClient } from "@tanstack/react-query";
+
 export function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -39,7 +41,7 @@ export function formatDateTime(dateString: string): string {
 
 
 export function updateCommentCountInAllPosts(
-    queryClient,
+    queryClient: QueryClient,
     postUuid: string,
     delta: number = 1
 ) {
@@ -47,7 +49,7 @@ export function updateCommentCountInAllPosts(
     const postQueryKeys = [["my-posts"]];
 
     for (const key of postQueryKeys) {
-        queryClient.setQueriesData(key, (oldData: any) => {
+        queryClient.setQueriesData({ queryKey: key }, (oldData: any) => {
             if (!oldData?.pages) return oldData;
 
             return {

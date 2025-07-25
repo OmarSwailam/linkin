@@ -64,7 +64,7 @@ export default function ProfileEditModal({ user, onClose }: { user?: User, onClo
                     placeholder="Social Worker"
                     id="title"
                     name="title"
-                    value={title}
+                    value={title ?? ""}
                     onChange={e => setTitle(e.target.value)}
                 />
 

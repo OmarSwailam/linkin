@@ -8,7 +8,7 @@ export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const search = useSearch({ from: '/login' });
+    const search = useSearch({ from: '/login' }) as { redirect?: string };
     const navigate = useNavigate();
 
     const login = useLogin();
